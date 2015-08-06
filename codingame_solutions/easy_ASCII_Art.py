@@ -1,6 +1,7 @@
 __author__ = 'Amin'
 
-import sys, math
+import sys
+import math
 
 # Auto-generated code below aims at helping you parse
 # the standard input according to the problem statement.
@@ -26,6 +27,5 @@ for i in xrange(H):
         print >> sys.stderr, "index_of_letter: " + str(index_of_letter)
         for j in xrange(0, L):
             output_line += ROW[index_of_letter * L + j]
-
 
     print output_line

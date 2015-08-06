@@ -1,6 +1,7 @@
 __author__ = 'Amin'
 
-import sys, math
+import sys
+import math
 
 # Auto-generated code below aims at helping you parse
 # the standard input according to the problem statement.
@@ -33,7 +34,6 @@ while 1:
         action = "SLOW"
 
     print >> sys.stderr, "Choosen action: " + action
-
 
     # Write an action using print
     # To debug: print >> sys.stderr, "Debug messages..."

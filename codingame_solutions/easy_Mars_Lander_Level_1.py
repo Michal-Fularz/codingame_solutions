@@ -1,6 +1,7 @@
 __author__ = 'Amin'
 
-import sys, math
+import sys
+import math
 
 # Auto-generated code below aims at helping you parse
 # the standard input according to the problem statement.
@@ -8,7 +9,8 @@ import sys, math
 surfaceN = int(raw_input()) # the number of points used to draw the surface of Mars.
 for i in xrange(surfaceN):
     # landX: X coordinate of a surface point. (0 to 6999)
-    # landY: Y coordinate of a surface point. By linking all the points together in a sequential fashion, you form the surface of Mars.
+    # landY: Y coordinate of a surface point. By linking all the points together
+    # in a sequential fashion, you form the surface of Mars.
     landX, landY = [int(j) for j in raw_input().split()]
 
 # game loop
@@ -32,4 +34,5 @@ while 1:
         power = 0
 
     print str(rotate) + " " + str(power)
-    #print(rotate, " ", power) # rotate power. rotate is the desired rotation angle. power is the desired thrust power.
+    # print(rotate, " ", power)
+    # rotate power. rotate is the desired rotation angle. power is the desired thrust power.
