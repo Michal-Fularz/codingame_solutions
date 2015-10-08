@@ -30,9 +30,9 @@ def propagate(current_person, persons, existing_nodes):
     depths = []
 
     for neighbour in current_person.neighbours:
-        index_of_neighbour = existing_nodes.index(neighbour)
-        if not persons[index_of_neighbour].was_visited:
-            depths.append(propagate(persons[index_of_neighbour], persons, existing_nodes))
+        #index_of_neighbour = existing_nodes.index(neighbour)
+        if not persons[neighbour].was_visited:
+            depths.append(propagate(persons[neighbour], persons, existing_nodes))
 
     if len(depths) > 0:
         depth += max(depths)
@@ -56,19 +56,19 @@ for i in xrange(n):
 
     if xi not in existing_nodes:
         existing_nodes.append(xi)
-        persons.append(Person(xi))
+        persons.append(Person(existing_nodes.index(xi)))
         number_of_nodes += 1
 
     if yi not in existing_nodes:
         existing_nodes.append(yi)
-        persons.append(Person(yi))
+        persons.append(Person(existing_nodes.index(yi)))
         number_of_nodes += 1
 
     index_of_person = existing_nodes.index(xi)
-    persons[index_of_person].add_neighbour(yi)
+    persons[index_of_person].add_neighbour(existing_nodes.index(yi))
 
     index_of_person = existing_nodes.index(yi)
-    persons[index_of_person].add_neighbour(xi)
+    persons[index_of_person].add_neighbour(existing_nodes.index(xi))
 
 # for person in persons:
 #     n = ""
