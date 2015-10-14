@@ -16,16 +16,13 @@ __author__ = 'Amin'
 # Test 5 -
 # Provided Input: abcde fghij klmno pqrs tuv wxyy
 # Expected Output: false
-
 def upper_letter():
     s = input()
-
 
     flag_upper = False
     for c in s:
         if c.isupper():
             flag_upper = True
-
 
     if flag_upper:
         print("true")
@@ -51,59 +48,73 @@ def upper_letter():
 # Test 6 -
 # Provided Input: 98304 65536
 # Expected Output: 32768
-
-
-NWD:
-import sys
-import math
-
-def nwd( m, n ):
+def _nwd( m, n ):
     while True: # petla, czyli "wroc do kroku", tylko ze oznaczone u celu, a nie na poczatku skoku. W pythonie nie ma goto (prawie...;))
         r = m % n # przypisanie reszty
         if not r: # jesli r rowne 0 to
             return n # zwroc n
         m, n = n, r # w przeciwnym przypadku przypisz co trzeba i powtorz
 
-# Auto-generated code below aims at helping you parse
-# the standard input according to the problem statement.
 
-a, b = [int(i) for i in input().split()]
+def NWD():
+    a, b = [int(i) for i in input().split()]
 
-m= nwd(a, b)
+    m = _nwd(a, b)
 
-print(str(a-b), file=sys.stderr)
-print(str(a+b), file=sys.stderr)
-print(str(a*b), file=sys.stderr)
-print(str(m), file=sys.stderr)
-
-# Write an action using print
-# To debug: print("Debug messages...", file=sys.stderr)
-
-print(m)
+    print(m)
 
 
+# Test 1 -
+# Provided Input: 5 2
+# Expected Output: 1 2 4 8 16
+def print_powers():
+    n, r = [int(i) for i in input().split()]
 
-import sys
-import math
+    l = []
+    for i in range(n):
+        l.append(pow(r, i))
 
-# Auto-generated code below aims at helping you parse
-# the standard input according to the problem statement.
+    p = ""
+    for k in l:
+        p += str(k) + " "
+    print(p[:-1])
 
-n, r = [int(i) for i in input().split()]
 
-# Write an action using print
-# To debug: print("Debug messages...", file=sys.stderr)
+# convert int values to 0-1 representation
+def _convert_to_bin_string(x):
+    l = []
+    flag_c = True
+    v = x
+    while flag_c:
+        if v>1:
+            if v%2 == 1:
+                l.append(1)
+            else:
+                l.append(0)
+            v=v//2
+        else:
+            if v == 1:
+                l.append(1)
+            else:
+                l.append(0)
+            flag_c = False
 
-l = []
-for i in range(n):
-    l.append(pow(r, i))
+    r=""
+    for i in reversed(l):
+        r+=str(i)
+    return r
 
-p = ""
-for k in l:
-    p += str(k) + " "
-print(p[:-1])
-#print("N numbers...")
 
+def print_as_binary():
+    n = int(input())
+
+    for i in range(n):
+        x = int(input())
+        print(_convert_to_bin_string(x))
+        print(bin(x)[2:])
+        print("{0:b}".format(x))
 
 
 if __name__ == "__main__":
+    print_as_binary()
+    pass

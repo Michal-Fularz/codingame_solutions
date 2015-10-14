@@ -58,7 +58,37 @@ def sum_of_letters_values(s):
     return sum_of_letters
 
 
+def sort_tuples():
+    n = int(input())
+
+    elements = []
+    for i in range(n):
+        item, distance = input().split()
+        distance = float(distance)
+        elements.append((item, distance))
+
+    elements_sorted = sorted(elements, key=lambda tup: tup[1])
+    r = ""
+    for x, y in reversed(s):
+        r += x + " "
+
+    print(r[:-1])
+
+
+# you are provided with a and b coefficients and then for each calc you have to calculate y=a*x+b
+# and print each y in separate line
+def linear_function():
+    a, b = [int(i) for i in input().split()]
+    n = int(input())
+
+    for i in range(n):
+        x = int(input())
+        y = a * x + b
+        print(y)
+
+
 if __name__ == "__main__":
+    linear_function()
     s = raw_input()
     print dna(s)
     print dna_if(s)
