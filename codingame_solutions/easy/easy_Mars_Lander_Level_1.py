@@ -3,8 +3,6 @@ __author__ = 'Amin'
 import sys
 import math
 
-# Auto-generated code below aims at helping you parse
-# the standard input according to the problem statement.
 
 surfaceN = int(raw_input()) # the number of points used to draw the surface of Mars.
 for i in xrange(surfaceN):
@@ -33,6 +31,5 @@ while 1:
     else:
         power = 0
 
-    print str(rotate) + " " + str(power)
-    # print(rotate, " ", power)
     # rotate power. rotate is the desired rotation angle. power is the desired thrust power.
+    print str(rotate) + " " + str(power)

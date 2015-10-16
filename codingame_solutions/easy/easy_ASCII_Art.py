@@ -3,8 +3,6 @@ __author__ = 'Amin'
 import sys
 import math
 
-# Auto-generated code below aims at helping you parse
-# the standard input according to the problem statement.
 
 L = int(raw_input())
 H = int(raw_input())

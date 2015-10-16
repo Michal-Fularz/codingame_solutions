@@ -3,8 +3,6 @@ __author__ = 'Amin'
 import sys
 import math
 
-# Auto-generated code below aims at helping you parse
-# the standard input according to the problem statement.
 
 N = int(raw_input())  # Number of elements which make up the association table.
 Q = int(raw_input())  # Number Q of file names to be analyzed.
@@ -23,7 +21,6 @@ for i in xrange(Q):
 
     index_of_last_dot = FNAME.rfind(".")
 
-
     if index_of_last_dot != -1:
         # filename is not important
         extension = FNAME[index_of_last_dot+1:].lower()
@@ -36,7 +33,7 @@ for i in xrange(Q):
     if extension != "":
         try:
             index = known_extensions.index(extension)
-            #print >> sys.stderr, "Index: " + str(index)
+            print >> sys.stderr, "Index: " + str(index)
             answer = mime_types[index]
         except ValueError:
             pass

@@ -3,8 +3,6 @@ __author__ = 'Amin'
 import sys
 import math
 
-# Auto-generated code below aims at helping you parse
-# the standard input according to the problem statement.
 
 def calc_distance(latitudeA, longitudeA, latitudeB, longitudeB):
     x = (longitudeB - longitudeA) * math.cos((latitudeA + latitudeB) / 2)
@@ -38,7 +36,7 @@ for defibrillator in defibrillators:
         float(defib_longitude.replace(",", "."))
     )
 
-    if(current_distance < min_distance):
+    if current_distance < min_distance:
         min_distance = current_distance
         closest_defib_name = defib_name
 

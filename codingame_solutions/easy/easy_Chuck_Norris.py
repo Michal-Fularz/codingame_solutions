@@ -17,8 +17,6 @@ def prepare_answer(bit_type, count, flag_without_trailing_space=False):
         answer += " "
     return answer
 
-# Auto-generated code below aims at helping you parse
-# the standard input according to the problem statement.
 
 MESSAGE = raw_input()
 
@@ -52,11 +50,11 @@ for bit in bits:
             count += 1
 
 # add the last part (accumulated but not added to answer)
-answer += prepare_answer(bit_type, count, True)
+answer += prepare_answer(bit_type, count, flag_without_trailing_space=True)
 # instead of using flag in function it is possible to just remove last character
 # (space) like this
 #answer = answer[:-1]
 
-# Write an action using print
-# To debug: print >> sys.stderr, "Debug messages..."
+# Write an asction using print
+# To debug: print >> sys.tderr, "Debug messages..."
 print answer
