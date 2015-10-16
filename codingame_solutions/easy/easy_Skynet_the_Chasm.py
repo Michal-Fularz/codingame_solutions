@@ -3,8 +3,6 @@ __author__ = 'Amin'
 import sys
 import math
 
-# Auto-generated code below aims at helping you parse
-# the standard input according to the problem statement.
 
 road = int(raw_input())  # the length of the road before the gap.
 gap = int(raw_input())  # the length of the gap.
