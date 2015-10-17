@@ -4,7 +4,7 @@ My solutions for codingame.com puzzles. The code for each puzzle is stored insid
 ### easy
 Easy puzzles. All done with Python 2.7.x.
 Described in a blog post:
-ADD link
+http://amin-can.blogspot.com/2015/10/codingame-fun-way-to-hone-your.html
 
 ### medium
 Work in progress. Some done, some will be, some not converted from C++. I will use Python 3.x.
