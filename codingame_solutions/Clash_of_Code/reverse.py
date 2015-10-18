@@ -48,7 +48,7 @@ def upper_letter():
 # Test 6 -
 # Provided Input: 98304 65536
 # Expected Output: 32768
-def _nwd( m, n ):
+def _gcd( m, n ):
     while True: # petla, czyli "wroc do kroku", tylko ze oznaczone u celu, a nie na poczatku skoku. W pythonie nie ma goto (prawie...;))
         r = m % n # przypisanie reszty
         if not r: # jesli r rowne 0 to
@@ -56,10 +56,10 @@ def _nwd( m, n ):
         m, n = n, r # w przeciwnym przypadku przypisz co trzeba i powtorz
 
 
-def NWD():
+def greatest_common_divisor():
     a, b = [int(i) for i in input().split()]
 
-    m = _nwd(a, b)
+    m = _gcd(a, b)
 
     print(m)
 
