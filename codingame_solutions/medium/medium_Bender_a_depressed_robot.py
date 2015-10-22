@@ -1,5 +1,8 @@
 __author__ = 'Amin'
 
+# COMPLETED
+# PYTHON 3.x
+
 import sys
 import math
 from enum import Enum
@@ -112,8 +115,11 @@ class Bender:
     def move(self, x: int, y: int):
         self.current_position = (x, y)
 
-    def change_priorities(self):
+    def toggle_priorities(self):
         self.flag_inverted_mode = not self.flag_inverted_mode
+
+    def toggle_breaker_mode(self):
+        self.flag_breaker_mode = not self.flag_breaker_mode
 
 
 class FuturamaCity:
@@ -134,7 +140,6 @@ class FuturamaCity:
 
             map_row = []
             visited_row = []
-            # do not take into account first and last column
             for character in row:
                 map_row.append(character)
                 visited_row.append(False)
@@ -177,15 +182,6 @@ class FuturamaCity:
     def get_cell(self, x: int, y: int):
         return self.map[y][x]
 
-    def check_if_in_range(self, x: int, y: int):
-        flag_in_range = True
-        if x < 0 or x >= self.width:
-            flag_in_range = False
-        if y < 0 or y >= self.height:
-            flag_in_range = False
-
-        return flag_in_range
-
     def remove_bear(self, x: int, y: int):
         self.map[y][x] = " "
 
@@ -208,6 +204,7 @@ b = Bender(x, y)
 print("Bender start: " + str(x) + ", " + str(y), file=sys.stderr)
 
 moves = []
+number_of_repeating_rounds = 0
 flag_game_is_on = True
 flag_loop = False
 while flag_game_is_on:
@@ -224,7 +221,6 @@ while flag_game_is_on:
 
         b.change_direction(cell_down, cell_up, cell_left, cell_right)
     else:
-        #if not f.was_visited(next_x, next_y):
         b.move(next_x, next_y)
         f.mark_as_visited(next_x, next_y)
         moves.append(b.current_direction)
@@ -236,13 +232,9 @@ while flag_game_is_on:
         elif cell == "S" or cell == "N" or cell == "E" or cell == "W":
             b.set_direction(cell)
         elif cell == "I":
-            b.change_priorities()
+            b.toggle_priorities()
         elif cell == "B":
-            if b.flag_breaker_mode:
-                b.flag_breaker_mode = False
-            else:
-                b.flag_breaker_mode = True
-                #f.remove_bear(next_x, next_y)
+            b.toggle_breaker_mode()
         elif cell == "T":
             after_teleport_x, after_teleport_y = f.get_connected_teleport_position(next_x, next_y)
             b.move(after_teleport_x, after_teleport_y)
@@ -253,19 +245,26 @@ while flag_game_is_on:
             pass
         else:
             print("Wrong cell value!", file=sys.stderr)
-        #else:
-            #flag_game_is_on = False
-            #flag_loop = True
+
+        if f.was_visited(next_x, next_y):
+            number_of_repeating_rounds += 1
+        else:
+            number_of_repeating_rounds = 0
+
+        if number_of_repeating_rounds >= 500:
+            flag_game_is_on = False
+            flag_loop = True
 
 # Write an action using print
 # To debug: print("Debug messages...", file=sys.stderr)
 
+r = ""
 if flag_loop:
-    print("LOOP")
+    r = "LOOP"
 else:
-    r = ""
     for move in moves:
         r += move.get_as_string()
         r += "\n"
+    r = r[:-1]
 
-    print(r[:-1])
+print(r)
