@@ -130,6 +130,16 @@ def most_common_letter():
      if c!=" ":l[ord(c)-97]+=1
     print(max(l))
 
+# list of values is given, sort them and print
+def sort_values():
+    n=int(raw_input())
+    v=[]
+    for i in range(n):
+        v.append(int(raw_input()))
+    v.sort()
+    print(v)
+
 
 if __name__ == "__main__":
-    split_text_into_columns()
+    #split_text_into_columns()
+    sort_values()
