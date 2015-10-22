@@ -119,10 +119,13 @@ class Bender:
 class FuturamaCity:
     def __init__(self):
         self.map = []
+        self.visited = []
         self.width = -1
         self.height = -1
+        self.teleports_positions = []
 
         self.__load_from_input()
+        self.__find_teleports()
 
     def __load_from_input(self):
         self.height, self.width = [int(i) for i in input().split()]
@@ -130,10 +133,13 @@ class FuturamaCity:
             row = input()
 
             map_row = []
+            visited_row = []
             # do not take into account first and last column
             for character in row:
                 map_row.append(character)
+                visited_row.append(False)
             self.map.append(map_row)
+            self.visited.append(visited_row)
 
     def get_map(self):
         r = ""
@@ -152,6 +158,22 @@ class FuturamaCity:
 
         return -1, -1
 
+    def __find_teleports(self):
+        for i in range(self.height):
+            for j in range(self.width):
+                if self.map[i][j] == "T":
+                    self.teleports_positions.append((j, i))
+
+    def get_connected_teleport_position(self, used_teleport_x, used_teleport_y):
+        if used_teleport_x == self.teleports_positions[0][0] and used_teleport_y == self.teleports_positions[0][1]:
+            second_teleport_x = self.teleports_positions[1][0]
+            second_teleport_y = self.teleports_positions[1][1]
+        else:
+            second_teleport_x = self.teleports_positions[0][0]
+            second_teleport_y = self.teleports_positions[0][1]
+
+        return second_teleport_x, second_teleport_y
+
     def get_cell(self, x: int, y: int):
         return self.map[y][x]
 
@@ -167,6 +189,15 @@ class FuturamaCity:
     def remove_bear(self, x: int, y: int):
         self.map[y][x] = " "
 
+    def break_wall(self, x: int, y: int):
+        self.map[y][x] = " "
+
+    def mark_as_visited(self, x: int, y: int):
+        self.visited[y][x] = True
+
+    def was_visited(self, x: int, y: int):
+        return self.visited[y][x]
+
 
 f = FuturamaCity()
 print("Map:", file=sys.stderr)
@@ -178,6 +209,7 @@ print("Bender start: " + str(x) + ", " + str(y), file=sys.stderr)
 
 moves = []
 flag_game_is_on = True
+flag_loop = False
 while flag_game_is_on:
     print("Bender: " + str(b.current_position[0]) + ", " + str(b.current_position[1]) + ", " + str(b.current_direction), file=sys.stderr)
 
@@ -192,13 +224,15 @@ while flag_game_is_on:
 
         b.change_direction(cell_down, cell_up, cell_left, cell_right)
     else:
+        #if not f.was_visited(next_x, next_y):
         b.move(next_x, next_y)
+        f.mark_as_visited(next_x, next_y)
         moves.append(b.current_direction)
 
         if cell == "$":
             flag_game_is_on = False
         elif cell == "X" and b.flag_breaker_mode:
-            pass
+            f.break_wall(next_x, next_y)
         elif cell == "S" or cell == "N" or cell == "E" or cell == "W":
             b.set_direction(cell)
         elif cell == "I":
@@ -208,22 +242,30 @@ while flag_game_is_on:
                 b.flag_breaker_mode = False
             else:
                 b.flag_breaker_mode = True
-                f.remove_bear(next_x, next_y)
+                #f.remove_bear(next_x, next_y)
         elif cell == "T":
-            print("Teleports not implemented yet", file=sys.stderr)
+            after_teleport_x, after_teleport_y = f.get_connected_teleport_position(next_x, next_y)
+            b.move(after_teleport_x, after_teleport_y)
+            f.mark_as_visited(after_teleport_x, after_teleport_y)
         elif cell == " ":
             pass
         elif cell == "@":
             pass
         else:
             print("Wrong cell value!", file=sys.stderr)
+        #else:
+            #flag_game_is_on = False
+            #flag_loop = True
 
 # Write an action using print
 # To debug: print("Debug messages...", file=sys.stderr)
 
-r = ""
-for move in moves:
-    r += move.get_as_string()
-    r += "\n"
+if flag_loop:
+    print("LOOP")
+else:
+    r = ""
+    for move in moves:
+        r += move.get_as_string()
+        r += "\n"
 
-print(r[:-1])
+    print(r[:-1])
