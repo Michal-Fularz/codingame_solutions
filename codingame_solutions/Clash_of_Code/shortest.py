@@ -139,6 +139,25 @@ def sort_values():
     v.sort()
     print(v)
 
+# TODO:
+The Hofstadter–Conway sequence is defined like so:
+a(1) = 1.
+a(2) = 1.
+a(n) = a(a(n - 1)) + a(n - a(n - 1)), for n > 2.
+
+Your program must ouput the first N terms of this sequence.
+
+
+N,i;
+int a(int b){return b<3?1:(a(a(b-1))+a(b-a(b-1)));};
+int main()
+{
+scanf("%d",&N);
+for(i=1;i<N;i++)
+printf("%d ",a(i));
+printf(„%d\n”,a(N));
+}
+
 
 if __name__ == "__main__":
     #split_text_into_columns()
