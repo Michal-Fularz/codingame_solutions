@@ -140,7 +140,7 @@ def sort_values():
     print(v)
 
 # TODO:
-The Hofstadter–Conway sequence is defined like so:
+The Hofstadter Conway sequence is defined like so:
 a(1) = 1.
 a(2) = 1.
 a(n) = a(a(n - 1)) + a(n - a(n - 1)), for n > 2.
@@ -155,7 +155,7 @@ int main()
 scanf("%d",&N);
 for(i=1;i<N;i++)
 printf("%d ",a(i));
-printf(„%d\n”,a(N));
+printf("%d\n"",a(N));
 }
 
 

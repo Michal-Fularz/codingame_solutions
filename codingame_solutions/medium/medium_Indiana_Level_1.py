@@ -30,7 +30,7 @@ class Direction(Enum):
 
 
 class EntryExit:
-    def __init__(self, entry: Direction, exit: Direction):
+    def __init__(self, entry: Direction, exit):
         self.entry = entry
         self.exit = exit
         
