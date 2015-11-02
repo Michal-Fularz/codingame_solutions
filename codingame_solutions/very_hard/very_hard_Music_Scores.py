@@ -79,6 +79,8 @@ class Image:
             self.notes_positions.append(y)
             self.notes_positions.append(y - self.space_between_lines//2)
 
+        print("Notes positions: " + str(self.notes_positions), file=sys.stderr)
+
     def remove_lines(self):
         for i in range(self.number_of_lines):
             self.__remove_parametrized_line(self.lines_starting_x, self.lines_starting_y[i], self.lines_width, self.lines_height)
@@ -133,13 +135,12 @@ class Image:
         #         return False
 
     def __calculate_long_part_width(self, x, y):
-        long_part_width = 1
+        long_part_width = 0
         current_x = x
-        self.data[y][current_x] = "W"
         while self.data[y][current_x] != " ":
+            self.data[y][current_x] = "W"
             long_part_width += 1
             current_x += 1
-            self.data[y][current_x] = "W"
 
         return long_part_width
 
@@ -254,10 +255,56 @@ class Image:
         else:
             return False
 
+    def __is_low_C(self, x, y):
+        print("y: " + str(y) + ", last note y: " + str(self.notes_positions[0]), file=sys.stderr)
+        if y >= self.notes_positions[0]:
+            return True
+        else:
+            return False
+
+    def __remove_low_C_line(self, x, y):
+        # calc line height
+
+        starting_x = x
+        startting_y = y
+
+        print("pixel: " + str(x) + ", " + str(y), file=sys.stderr)
+
+        low_C_line_height = 0
+        current_y = y
+        while self.__get_pixel(x, current_y) != " ":
+            low_C_line_height += 1
+            current_y += 1
+
+        flag_first_pixel_of_main_part = True
+
+        current_x = x
+        while self.__get_pixel(current_x, y) != " ":
+            # if above and belowe the line are pixels keep them
+            # otherwise remove
+            if self.__get_pixel(current_x, y-1) == " " and self.__get_pixel(current_x, y+low_C_line_height) == " ":
+                for i in range(low_C_line_height):
+                    self.data[y+i][current_x] = " "
+            else:
+                if flag_first_pixel_of_main_part:
+                    starting_x = current_x
+                    flag_first_pixel_of_main_part = False
+            current_x += 1
+
+        print("low_C_line_height: " + str(low_C_line_height), file=sys.stderr)
+
+        return starting_x, startting_y
+
     def calculate_center_of_mass(self, starting_x, starting_y):
         total_x = 0
         total_y = 0
         number_of_elements = 0
+
+        self.data[y][x] = "T"
+
+        # special case when dealing with first C
+        if self.__is_low_C(starting_x, starting_y):
+            starting_x, starting_y = self.__remove_low_C_line(starting_x, starting_y)
 
         elements_to_check = [(starting_x, starting_y)]
 
@@ -294,8 +341,6 @@ class Image:
                 minimal_distance = difference
                 minimal_index = index
 
-        print("Notes positions: " + str(self.notes_positions), file=sys.stderr)
-
         note = self.notes[minimal_index]
 
         if long_part_width == 1:
@@ -316,7 +361,7 @@ flag_test = True
 
 f = None
 if flag_test:
-    f = open("very_hard_Music_Scores_test_1.txt", "r")
+    f = open("very_hard_Music_Scores_test_11.txt", "r")
     w, h = [int(i) for i in f.readline().split()]
 else:
     w, h = [int(i) for i in input().split()]
@@ -339,23 +384,26 @@ else:
     long_part_beginnings, long_part_width = image.find_pairs_of_pixels_with_three_neighbours()
     print(long_part_beginnings, file=sys.stderr)
     print("Long part width: " + str(long_part_width), file=sys.stderr)
-    #for pixel in long_part_beginnings:
-        #image.remove_long_part(pixel[0], pixel[1], width=long_part_width)
-
-image.print_debug(image.data)
+    for pixel in long_part_beginnings:
+        image.remove_long_part(pixel[0], pixel[1], width=long_part_width)
 
 result = ""
 
-# flag_search = True
-# while flag_search:
-#     x, y = image.find_first_pixel_from_top_left_by_column(0, 0)
-#     if x != -1 and y != -1:
-#         center_x, center_y, number_of_elements = image.calculate_center_of_mass(x, y)
-#         note = image.decide_which_note(center_x, center_y, number_of_elements, long_part_width)
-#         print("note: " + str(note), file=sys.stderr)
-#         result += note + " "
-#     else:
-#         flag_search = False
+flag_search = True
+x = 0
+y = 0
+while flag_search:
+    x, y = image.find_first_pixel_from_top_left_by_column(x, 0)
+    if x != -1 and y != -1:
+        center_x, center_y, number_of_elements = image.calculate_center_of_mass(x, y)
+        note = image.decide_which_note(center_x, center_y, number_of_elements, long_part_width)
+        print("note: " + str(note), file=sys.stderr)
+        result += note + " "
+    else:
+        flag_search = False
+
+
+image.print_debug(image.data)
 
 # Write an action using print
 # To debug: print("Debug messages...", file=sys.stderr)
