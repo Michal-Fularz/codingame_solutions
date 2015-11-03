@@ -30,7 +30,7 @@ class Building:
         self.height = height
         print("Width: " + str(self.width) + ", height: " + str(self.height), file=sys.stderr)
 
-        self.map = np.zeros((self.height, self.width))#, dtype="int8")
+        self.map = np.zeros((self.height, self.width))#, dtype=np.uint8)
         print(self.map, file=sys.stderr)
 
         self.odd_movement = False
