@@ -33,6 +33,10 @@ class Building:
         self.map = np.zeros((self.height, self.width))#, dtype="int8")
         print(self.map, file=sys.stderr)
 
+        self.odd_movement = False
+
+        self.special_flag_secret = False
+
     def __mark_up_right_as_empty(self, current_x, current_y):
         self.map[0:current_y+1, current_x:self.width] = 1
 
@@ -55,9 +59,7 @@ class Building:
                 distance_traveled = batman.y_current - batman.y_previous
 
                 y_start = batman.y_previous + distance_traveled // 2
-                y_end = batman.y_current - distance_traveled // 2
-                if y_end >= self.height:
-                    y_end = self.height
+                y_end = batman.y_current - distance_traveled // 2 + 1
 
                 self.map[0:y_start, :] = -1
                 self.map[y_end:self.height, :] = -1
@@ -67,9 +69,7 @@ class Building:
             elif batman.direction_current == Direction.up:
                 distance_traveled = batman.y_previous - batman.y_current
 
-                y_start = batman.y_current - distance_traveled // 2 + 1
-                if y_start < 0:
-                    y_start = 0
+                y_start = batman.y_current + distance_traveled // 2
                 y_end = batman.y_previous - distance_traveled // 2 + 1
 
                 self.map[0:y_start, :] = -1
@@ -81,129 +81,116 @@ class Building:
             elif batman.direction_current == Direction.left:
                 distance_traveled = batman.x_previous - batman.x_current
 
-                x_start = batman.x_current + distance_traveled // 2 - 1
+                x_start = batman.x_current + distance_traveled // 2
                 x_end = batman.x_previous - distance_traveled // 2 + 1
 
                 self.map[batman.y_current, 0:x_start] = -1
                 self.map[batman.y_current, x_end:self.width] = -1
 
+                print(self.map[batman.y_current], file=sys.stderr)
+
             elif batman.direction_current == Direction.right:
                 distance_traveled = batman.x_current - batman.x_previous
 
-                x_start = batman.x_previous + distance_traveled // 2 - 1
+                x_start = batman.x_previous + distance_traveled // 2
                 x_end = batman.x_current - distance_traveled // 2 + 1
 
                 self.map[batman.y_current, 0:x_start] = -1
                 self.map[batman.y_current, x_end:self.width] = -1
 
+                print(self.map[batman.y_current], file=sys.stderr)
+
             else:
                 pass
 
         elif bomb_dist == "WARMER":
-            if flag_first_round:
-                if batman.direction_current == Direction.down:
-                    self.map[0:batman.y_current, :] = -1
-                elif batman.direction_current == Direction.up:
-                    self.map[batman.y_current:self.height, :] = -1
-            else:
+            # if flag_first_round:
+            #     if batman.direction_current == Direction.down:
+            #         self.map[0:batman.y_current+1, :] = -1
+            #     elif batman.direction_current == Direction.up:
+            #         self.map[batman.y_current-1:self.height, :] = -1
+            # else:
                 if batman.direction_current == Direction.down:
                     distance_traveled = batman.y_current - batman.y_previous
 
                     y_start = batman.y_previous + distance_traveled // 2 + 1
 
-                    # remove all the rows that were above previous position
                     self.map[0:y_start, :] = -1
 
-                    #self.__update_map_distance_further(0, self.width, y_start, y_end)
                 elif batman.direction_current == Direction.up:
                     distance_traveled = batman.y_previous - batman.y_current
 
-                    y_start = batman.y_current - distance_traveled
-                    if y_start < 0:
-                        y_start = 0
                     y_end = batman.y_previous - distance_traveled // 2
 
-                    # remove all the rows that were below previous position
                     self.map[y_end:self.height, :] = -1
-                    # remove all the rows that are above
-                    self.map[0:y_start, :] = -1
-
-                    #self.__update_map_distance_further(0, self.width, y_start, y_end)
 
                 # this part is done only when the right row is chosen
                 elif batman.direction_current == Direction.left:
                     distance_traveled = batman.x_previous - batman.x_current
 
-                    x_start = 0
                     x_end = batman.x_previous - distance_traveled // 2
-                    if x_end >= self.width:
-                        x_end = self.width - 1
 
                     self.map[batman.y_current, x_end:self.width] = -1
+
+                    #print(self.map[batman.y_current], file=sys.stderr)
 
                 elif batman.direction_current == Direction.right:
                     distance_traveled = batman.x_current - batman.x_previous
 
-                    x_start = batman.x_previous + distance_traveled // 2
-                    if x_start < 0:
-                        x_start = 0
-                    x_end = self.width - 1
+                    x_start = batman.x_previous + distance_traveled // 2 + 1
 
                     self.map[batman.y_current, 0:x_start] = -1
+
+                    #print(self.map[batman.y_current], file=sys.stderr)
 
                 else:
                     self.__update_map_distance_further(0, self.width, 0, self.height)
 
         elif bomb_distance == "COLDER":
-            if flag_first_round:
-                if batman.direction_current == Direction.down:
-                    self.map[batman.y_current:self.height, :] = -1
-                elif batman.direction_current == Direction.up:
-                    self.map[0:batman.y_current, :] = -1
-            else:
+            # if flag_first_round:
+            #     if batman.direction_current == Direction.down:
+            #         self.map[batman.y_current:self.height, :] = -1
+            #     elif batman.direction_current == Direction.up:
+            #         self.map[0:batman.y_current, :] = -1
+            # else:
                 if batman.direction_current == Direction.down:
                     distance_traveled = batman.y_current - batman.y_previous
 
-                    y_end = batman.y_previous + distance_traveled // 2 + 1
-                    if y_end >= self.height:
-                        y_end = self.height
+                    y_end = batman.y_current - distance_traveled // 2
 
-                    # remove all the rows that were below previous position
                     self.map[y_end:self.height, :] = -1
 
-                    #self.__update_map_distance_further(0, self.width, y_start, y_end)
                 elif batman.direction_current == Direction.up:
                     distance_traveled = batman.y_previous - batman.y_current
 
-                    y_start = batman.y_previous - distance_traveled // 2
-                    if y_start < 0:
-                        y_start = 0
+                    y_start = batman.y_current + distance_traveled // 2 + 1
 
-                    # remove all the rows that were above previous position
                     self.map[0:y_start, :] = -1
-
-                    #self.__update_map_distance_further(0, self.width, y_start, y_end)
 
 
                 # this part is done only when the right row is chosen
                 elif batman.direction_current == Direction.left:
                     distance_traveled = batman.x_previous - batman.x_current
 
-                    x_start = batman.x_current + distance_traveled // 2
+                    x_start = batman.x_current + distance_traveled // 2 + 1
 
                     self.map[batman.y_current, 0:x_start] = -1
+
+                    #print(self.map[batman.y_current], file=sys.stderr)
 
                 elif batman.direction_current == Direction.right:
                     distance_traveled = batman.x_current - batman.x_previous
 
-                    x_end = batman.y_current - distance_traveled // 2
+                    x_end = batman.x_current - distance_traveled // 2
 
                     self.map[batman.y_current, x_end:self.width] = -1
+
+                    #print(self.map[batman.y_current], file=sys.stderr)
 
                 else:
                     self.__update_map_distance_further(0, self.width, 0, self.height)
 
-        print(self.map, file=sys.stderr)
+        #print(self.map, file=sys.stderr)
 
     def __update_map_distance_closer(self, x_start, x_end, y_start, y_end):
         # iterate over all the cells, calculate previous and current distance and mark those that are closer than in previous step
@@ -254,6 +241,17 @@ class Building:
         if bomb_distance == "WARMER":
             # last time we moved in right direction
             direction = bat.direction_current
+
+            free_cells_in_current_direction = self.__count_number_of_free_cells_in_that_direction(bat.x_current, bat.y_current, direction)
+            free_cells_in_opposing_direction = self.__count_number_of_free_cells_in_that_direction(bat.x_current, bat.y_current, Direction.get_opposite(direction))
+
+            print("Free cells in current direction: " + str(free_cells_in_current_direction), file=sys.stderr)
+            print("Free cells in opposing direction: " + str(free_cells_in_opposing_direction), file=sys.stderr)
+
+            if free_cells_in_opposing_direction > free_cells_in_current_direction:
+                direction = Direction.get_opposite(bat.direction_current)
+                print("Change direction in work!", file=sys.stderr)
+
         elif bomb_distance == "COLDER":
             direction = Direction.get_opposite(bat.direction_current)
         elif bomb_distance == "SAME":
@@ -273,6 +271,34 @@ class Building:
                 return Direction.left
 
         return direction
+
+    def __count_number_of_free_cells_in_that_direction(self, current_x, current_y, direction ):
+        free_cells = 0
+        if direction == Direction.up:
+            # check column above
+            print("Checking column above", file=sys.stderr)
+            for y in range(0, current_y):
+                if self.map[y][current_x] == 0:
+                    free_cells += 1
+        elif direction == Direction.down:
+            # check column below
+            print("Checking column below", file=sys.stderr)
+            for y in range(current_y+1, self.height):
+                if self.map[y][current_x] == 0:
+                    free_cells += 1
+        if direction == Direction.left:
+            # check row on the left
+            print("Checking row on the left", file=sys.stderr)
+            for x in range(0, current_x):
+                if self.map[current_y][x] == 0:
+                    free_cells += 1
+        elif direction == Direction.right:
+            # check column below
+            print("Checking row on the right", file=sys.stderr)
+            for x in range(current_x+1, self.width):
+                if self.map[current_y][x] == 0:
+                    free_cells += 1
+        return free_cells
 
     def __check_if_there_are_free_cells_in_that_direction(self, current_x, current_y, direction):
         if direction == Direction.up:
@@ -306,10 +332,12 @@ class Building:
 
         if current_y < (self.height // 2):
             direction = Direction.down
+            new_position = self.height//2# - current_y
         else:
             direction = Direction.up
+            new_position = self.height//2# - current_y
 
-        return direction
+        return direction, new_position
 
     def find_next_position(self, current_x, current_y, direction):
 
@@ -323,16 +351,54 @@ class Building:
             for y in range(current_y+1, self.height):
                 if self.map[y][current_x] == 0:
                     available_points.append(y)
-        elif direction == Direction.left:
-            for x in range(0, current_x):
-                if self.map[current_y][x] == 0:
-                    available_points.append(x)
         elif direction == Direction.right:
             for x in range(current_x+1, self.width):
                 if self.map[current_y][x] == 0:
                     available_points.append(x)
+        elif direction == Direction.left:
+            for x in range(0, current_x):
+                if self.map[current_y][x] == 0:
+                    available_points.append(x)
 
+
+        #available_points.sort()
         next_position = sum(available_points) / len(available_points)
+
+        #if len(available_points) == 1 and (direction == Direction.up or direction == Direction.down):
+        #    self.special_flag_secret = True
+
+        #if next_position - int(next_position) > 0:
+            #next_position += 1
+
+        if not self.odd_movement:
+            if direction == Direction.up:
+                pass
+                #next_position = available_points[int(0.25*len(available_points))]
+                #next_position = min(available_points)
+            elif direction == Direction.down:
+                #pass
+                #next_position = available_points[int(0.75*len(available_points))]
+                next_position = max(available_points)
+            elif direction == Direction.left:
+                #pass
+                #next_position = available_points[int(0.25*len(available_points))]
+                next_position = min(available_points)
+            elif direction == Direction.right:
+                pass
+                #next_position = available_points[int(0.75*len(available_points))]
+                #next_position = max(available_points)
+            #self.odd_movement = True
+
+        # if self.odd_movement:
+        #     if direction == Direction.up:
+        #         next_position = available_points[int(0.25*len(available_points))]
+        #     elif direction == Direction.down:
+        #         next_position = available_points[int(0.75*len(available_points))]
+        #     elif direction == Direction.left:
+        #         next_position = available_points[int(0.25*len(available_points))]
+        #     elif direction == Direction.right:
+        #         next_position = available_points[int(0.75*len(available_points))]
+        #     self.odd_movement = False
 
         return int(next_position)
 
@@ -444,10 +510,11 @@ bomb_dist = input()  # Current distance to the bomb compared to previous distanc
 
 # first round is special - bomb_distance = UNKNOWN
 #vertical_movement, horizontal_movement = building.find_movements_first_round(batman.x_current, batman.y_current)
-current_direction = building.find_movements_first_round(batman.x_current, batman.y_current)
+current_direction, new_pos = building.find_movements_first_round(batman.x_current, batman.y_current)
 
 #batman.update(horizontal_movement, vertical_movement)
-batman.update_based_on_direction(current_direction, 1)
+#batman.update_based_on_direction(current_direction, 1)
+batman.update_based_on_direction2(current_direction, new_pos)
 batman.direction_previous = current_direction
 
 print(str(batman.x_current) + " " + str(batman.y_current))
@@ -467,6 +534,25 @@ while 1:
     #current_distance_available = building.find_distance_available(batman.x_current, batman.y_current, current_direction)
     new_pos = building.find_next_position(batman.x_current, batman.y_current, current_direction)
     print("Distance available: " + str(new_pos), file=sys.stderr)
+
+    if building.special_flag_secret:
+        print("THIS IS HAPPENING!!!", file=sys.stderr)
+        # move a little bit up or down
+        batman.update_based_on_direction2(current_direction, new_pos)
+        # act once more, this time vertically
+        bomb_dist = "WARMER"
+        building.update_map(batman, bomb_dist, flag_first_round)
+        if flag_first_round:
+            flag_first_round = False
+
+        #vertical_movement, horizontal_movement = building.find_movements_based_on_distance(batman, bomb_dist)
+        current_direction = building.find_movements_based_on_distance(batman, bomb_dist)
+        print("Direction choosen: " + str(current_direction), file=sys.stderr)
+        #current_distance_available = building.find_distance_available(batman.x_current, batman.y_current, current_direction)
+        new_pos = building.find_next_position(batman.x_current, batman.y_current, current_direction)
+        print("Distance available: " + str(new_pos), file=sys.stderr)
+
+
 
     #batman.update(horizontal_movement, vertical_movement)
     batman.update_based_on_direction2(current_direction, new_pos)
