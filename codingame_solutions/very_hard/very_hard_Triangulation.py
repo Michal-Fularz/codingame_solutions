@@ -12,6 +12,7 @@ class Direction(Enum):
     left = 3
     right = 4
 
+    @staticmethod
     def get_opposite(direction):
         if direction == Direction.up:
             return Direction.down
@@ -29,7 +30,7 @@ class Building:
         self.height = height
         print("Width: " + str(self.width) + ", height: " + str(self.height), file=sys.stderr)
 
-        self.map = np.zeros((self.height, self.width), dtype="int8")
+        self.map = np.zeros((self.height, self.width))#, dtype="int8")
         print(self.map, file=sys.stderr)
 
     def __mark_up_right_as_empty(self, current_x, current_y):
@@ -44,36 +45,207 @@ class Building:
     def __mark_down_left_as_empty(self, current_x, current_y):
         self.map[current_y:self.height, 0:current_x+1] = 1
 
-    def update_map(self, batman, bomb_distance):
+    def update_map(self, batman, bomb_distance, flag_first_round):
 
         #print("Current: " + str(batman.x_current) + ", " + str(batman.y_current), file=sys.stderr)
         #print("Previous: " + str(batman.x_previous) + ", " + str(batman.y_previous), file=sys.stderr)
 
         if bomb_distance == "SAME":
-            pass
-        elif bomb_distance == "WARMER":
-            # iterate over all the cells, calculate previous and current distance and mark those that are further than in previous step
-            print("Remove those that are further", file=sys.stderr)
-            for i in range(self.height):
-                for j in range(self.width):
-                    distance_previous = math.sqrt(pow(batman.x_previous - j, 2) + pow(batman.y_previous - i, 2))
-                    distance_current = math.sqrt(pow(batman.x_current - j, 2) + pow(batman.y_current - i, 2))
+            if batman.direction_current == Direction.down:
+                distance_traveled = batman.y_current - batman.y_previous
 
-                    if distance_current > distance_previous:
-                        self.map[i][j] = distance_current
+                y_start = batman.y_previous + distance_traveled // 2
+                y_end = batman.y_current - distance_traveled // 2
+                if y_end >= self.height:
+                    y_end = self.height
+
+                self.map[0:y_start, :] = -1
+                self.map[y_end:self.height, :] = -1
+
+                #self.__update_map_distance_further(0, self.width, y_start, y_end)
+
+            elif batman.direction_current == Direction.up:
+                distance_traveled = batman.y_previous - batman.y_current
+
+                y_start = batman.y_current - distance_traveled // 2 + 1
+                if y_start < 0:
+                    y_start = 0
+                y_end = batman.y_previous - distance_traveled // 2 + 1
+
+                self.map[0:y_start, :] = -1
+                self.map[y_end:self.height, :] = -1
+
+                #self.__update_map_distance_further(0, self.width, y_start, y_end)
+
+            # this part is done only when the right row is chosen
+            elif batman.direction_current == Direction.left:
+                distance_traveled = batman.x_previous - batman.x_current
+
+                x_start = batman.x_current + distance_traveled // 2 - 1
+                x_end = batman.x_previous - distance_traveled // 2 + 1
+
+                self.map[batman.y_current, 0:x_start] = -1
+                self.map[batman.y_current, x_end:self.width] = -1
+
+            elif batman.direction_current == Direction.right:
+                distance_traveled = batman.x_current - batman.x_previous
+
+                x_start = batman.x_previous + distance_traveled // 2 - 1
+                x_end = batman.x_current - distance_traveled // 2 + 1
+
+                self.map[batman.y_current, 0:x_start] = -1
+                self.map[batman.y_current, x_end:self.width] = -1
+
+            else:
+                pass
+
+        elif bomb_dist == "WARMER":
+            if flag_first_round:
+                if batman.direction_current == Direction.down:
+                    self.map[0:batman.y_current, :] = -1
+                elif batman.direction_current == Direction.up:
+                    self.map[batman.y_current:self.height, :] = -1
+            else:
+                if batman.direction_current == Direction.down:
+                    distance_traveled = batman.y_current - batman.y_previous
+
+                    y_start = batman.y_previous + distance_traveled // 2 + 1
+
+                    # remove all the rows that were above previous position
+                    self.map[0:y_start, :] = -1
+
+                    #self.__update_map_distance_further(0, self.width, y_start, y_end)
+                elif batman.direction_current == Direction.up:
+                    distance_traveled = batman.y_previous - batman.y_current
+
+                    y_start = batman.y_current - distance_traveled
+                    if y_start < 0:
+                        y_start = 0
+                    y_end = batman.y_previous - distance_traveled // 2
+
+                    # remove all the rows that were below previous position
+                    self.map[y_end:self.height, :] = -1
+                    # remove all the rows that are above
+                    self.map[0:y_start, :] = -1
+
+                    #self.__update_map_distance_further(0, self.width, y_start, y_end)
+
+                # this part is done only when the right row is chosen
+                elif batman.direction_current == Direction.left:
+                    distance_traveled = batman.x_previous - batman.x_current
+
+                    x_start = 0
+                    x_end = batman.x_previous - distance_traveled // 2
+                    if x_end >= self.width:
+                        x_end = self.width - 1
+
+                    self.map[batman.y_current, x_end:self.width] = -1
+
+                elif batman.direction_current == Direction.right:
+                    distance_traveled = batman.x_current - batman.x_previous
+
+                    x_start = batman.x_previous + distance_traveled // 2
+                    if x_start < 0:
+                        x_start = 0
+                    x_end = self.width - 1
+
+                    self.map[batman.y_current, 0:x_start] = -1
+
+                else:
+                    self.__update_map_distance_further(0, self.width, 0, self.height)
 
         elif bomb_distance == "COLDER":
-            # iterate over all the cells, calculate previous and current distance and mark those that are further than in previous step
-            print("Remove those that are closer", file=sys.stderr)
-            for i in range(self.height):
-                for j in range(self.width):
-                    distance_previous = math.sqrt(pow(batman.x_previous - j, 2) + pow(batman.y_previous - i, 2))
-                    distance_current = math.sqrt(pow(batman.x_current - j, 2) + pow(batman.y_current - i, 2))
+            if flag_first_round:
+                if batman.direction_current == Direction.down:
+                    self.map[batman.y_current:self.height, :] = -1
+                elif batman.direction_current == Direction.up:
+                    self.map[0:batman.y_current, :] = -1
+            else:
+                if batman.direction_current == Direction.down:
+                    distance_traveled = batman.y_current - batman.y_previous
 
-                    if distance_current < distance_previous:
-                        self.map[i][j] = 100+distance_current
+                    y_end = batman.y_previous + distance_traveled // 2 + 1
+                    if y_end >= self.height:
+                        y_end = self.height
+
+                    # remove all the rows that were below previous position
+                    self.map[y_end:self.height, :] = -1
+
+                    #self.__update_map_distance_further(0, self.width, y_start, y_end)
+                elif batman.direction_current == Direction.up:
+                    distance_traveled = batman.y_previous - batman.y_current
+
+                    y_start = batman.y_previous - distance_traveled // 2
+                    if y_start < 0:
+                        y_start = 0
+
+                    # remove all the rows that were above previous position
+                    self.map[0:y_start, :] = -1
+
+                    #self.__update_map_distance_further(0, self.width, y_start, y_end)
+
+
+                # this part is done only when the right row is chosen
+                elif batman.direction_current == Direction.left:
+                    distance_traveled = batman.x_previous - batman.x_current
+
+                    x_start = batman.x_current + distance_traveled // 2
+
+                    self.map[batman.y_current, 0:x_start] = -1
+
+                elif batman.direction_current == Direction.right:
+                    distance_traveled = batman.x_current - batman.x_previous
+
+                    x_end = batman.y_current - distance_traveled // 2
+
+                    self.map[batman.y_current, x_end:self.width] = -1
+
+                else:
+                    self.__update_map_distance_further(0, self.width, 0, self.height)
 
         print(self.map, file=sys.stderr)
+
+    def __update_map_distance_closer(self, x_start, x_end, y_start, y_end):
+        # iterate over all the cells, calculate previous and current distance and mark those that are closer than in previous step
+        print("Remove those that are closer", file=sys.stderr)
+        for y in range(y_start, y_end):
+            for x in range(x_start, x_end):
+                if self.map[y][x] == 0:
+                    # TODO: POSSIBLE IMPROVEMENTS:
+                    # initial:
+                    # distance_previous = math.sqrt(pow(batman.x_previous - x, 2) + pow(batman.y_previous - y, 2))
+                    # distance_current = math.sqrt(pow(batman.x_current - x, 2) + pow(batman.y_current - y, 2))
+                    # remove sqrt!
+                    # distance_previous = pow(batman.x_previous - x, 2) + pow(batman.y_previous - y, 2)
+                    # distance_current = pow(batman.x_current - x, 2) + pow(batman.y_current - y, 2)
+                    # change pow to multiply
+                    distance_previous = (batman.x_previous - x) * (batman.x_previous - x) + (batman.y_previous - y) * (batman.y_previous - y)
+                    distance_current = (batman.x_current - x) * (batman.x_current - x) + (batman.y_current - y) * (batman.y_current - y)
+
+                    if distance_current < distance_previous:
+                        self.map[y][x] = distance_current
+
+    def __update_map_distance_further(self, x_start, x_end, y_start, y_end):
+        # iterate over all the cells, calculate previous and current distance and mark those that are further than in previous step
+        print("Remove those that are further", file=sys.stderr)
+        print("x_start: " + str(x_start) + ", x_end: " + str(x_end), file=sys.stderr)
+        print("y_start: " + str(y_start) + ", y_end: " + str(y_end), file=sys.stderr)
+        for y in range(y_start, y_end):
+            for x in range(x_start, x_end):
+                if self.map[y][x] == 0:
+                    # TODO: POSSIBLE IMPROVEMENTS:
+                    # initial:
+                    # distance_previous = math.sqrt(pow(batman.x_previous - x, 2) + pow(batman.y_previous - y, 2))
+                    # distance_current = math.sqrt(pow(batman.x_current - x, 2) + pow(batman.y_current - y, 2))
+                    # remove sqrt!
+                    # distance_previous = pow(batman.x_previous - x, 2) + pow(batman.y_previous - y, 2)
+                    # distance_current = pow(batman.x_current - x, 2) + pow(batman.y_current - y, 2)
+                    # change pow to multiply
+                    distance_previous = (batman.x_previous - x) * (batman.x_previous - x) + (batman.y_previous - y) * (batman.y_previous - y)
+                    distance_current = (batman.x_current - x) * (batman.x_current - x) + (batman.y_current - y) * (batman.y_current - y)
+
+                    if distance_current > distance_previous:
+                        self.map[y][x] = distance_current
 
     def find_movements_based_on_distance(self, bat, bomb_distance):
 
@@ -99,21 +271,6 @@ class Building:
                 return Direction.right
             if self.__check_if_there_are_free_cells_in_that_direction(bat.x_current, batman.y_current, Direction.left):
                 return Direction.left
-        # new_x, new_y = bat.get_new_position_based_on_direction(current_direction, 1)
-        # if self.map[new_y][new_x] != 0:
-        #     # check available directions
-        #     new_x, new_y = bat.get_new_position_based_on_direction(Direction.up)
-        #     if self.map[new_y][new_x] == 0:
-        #         return Direction.up
-        #     new_x, new_y = bat.get_new_position_based_on_direction(Direction.down)
-        #     if self.map[new_y][new_x] == 0:
-        #         return Direction.down
-        #     new_x, new_y = bat.get_new_position_based_on_direction(Direction.left)
-        #     if self.map[new_y][new_x] == 0:
-        #         return Direction.left
-        #     new_x, new_y = bat.get_new_position_based_on_direction(Direction.right)
-        #     if self.map[new_y][new_x] == 0:
-        #         return Direction.right
 
         return direction
 
@@ -281,7 +438,7 @@ batman = Batman(x0, y0)
 #         a[i][j] = abs(i-3) + abs(j-4)
 # print(a)
 
-
+flag_first_round = True
 
 bomb_dist = input()  # Current distance to the bomb compared to previous distance (COLDER, WARMER, SAME or UNKNOWN)
 
@@ -300,7 +457,9 @@ while 1:
     previous_bomb_dist = bomb_dist
     bomb_dist = input()  # Current distance to the bomb compared to previous distance (COLDER, WARMER, SAME or UNKNOWN)
 
-    building.update_map(batman, bomb_dist)
+    building.update_map(batman, bomb_dist, flag_first_round)
+    if flag_first_round:
+        flag_first_round = False
 
     #vertical_movement, horizontal_movement = building.find_movements_based_on_distance(batman, bomb_dist)
     current_direction = building.find_movements_based_on_distance(batman, bomb_dist)
