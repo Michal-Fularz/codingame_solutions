@@ -7,17 +7,23 @@ import math
 class Person:
     def __init__(self, name):
         self.neighbours = []
-        self.was_visited = False
+        self.__number_of_visits = 0
         self.__name = name
 
     def add_neighbour(self, new_neighbour):
         self.neighbours.append(new_neighbour)
 
-    def mark_as_visited(self):
-        self.was_visited = True
-
-    def mark_as_not_visited(self):
-        self.was_visited = False
+    def should_be_visited(self):
+        if self.__number_of_visits < len(self.neighbours):
+            return True
+        else:
+            return False
+            
+    def add_visit(self):
+        self.__number_of_visits += 1
+        
+    def clear_visits(self):
+        self.__number_of_visits = 0
 
     def get_name(self):
         return self.__name
@@ -26,13 +32,13 @@ class Person:
 def propagate(current_person, persons, existing_nodes, recurse=True):
     depth = 1
     visited_nodes = [current_person.get_name()]
-    current_person.mark_as_visited()
+    current_person.add_visit()
 
     depths = []
     lst_visited_nodes = []
 
     for neighbour in current_person.neighbours:
-        if not persons[neighbour].was_visited:
+        if persons[neighbour].should_be_visited():
             d, vn = propagate(persons[neighbour], persons, existing_nodes)
             depths.append(d)
             lst_visited_nodes.append(vn)
@@ -93,67 +99,59 @@ for person in persons:
         n += str(neigh) + ", "
     print >> sys.stderr, str(person.get_name()) + ", neigh: " + n
 
-for node in existing_nodes:
-    print >> sys.stderr, "Nodes: " + str(node)
-
 flag_continue = True
 
-# lets start with first person
+# lets start with first person that has one neighbour
 depths = []
 lst_visited_nodes = []
-depths, lst_visited_nodes = propagate(persons[0], persons, existing_nodes, recurse=False)
+person_with_one_neighbour = persons[0]
+for i in xrange(len(persons)):
+    if len(persons[i].neighbours) == 1:
+        print >> sys.stderr, "index: " + str(i)
+        person_with_one_neighbour = persons[i]
+        break
+    
+depths, lst_visited_nodes = propagate(person_with_one_neighbour, persons, existing_nodes, recurse=False)
+for person in persons:
+    person.clear_visits()
 
-current_depth = 999
-previous_depth = 999
+print >> sys.stderr, "depths: " + str(depths)
+print >> sys.stderr, "lst_visited_nodes: " + str(lst_visited_nodes)
 
-while flag_continue:
-    longest_path = 0
-    nodes_on_longest_path = []
+longest_list_length = len(lst_visited_nodes[0])
+longest_list_index = 0
+for index, lst in enumerate(lst_visited_nodes[1:]):
+    if len(lst) > longest_list_length:
+        longest_list_length = len(lst)
+        longest_list_index = index
 
-    if len(depths) == 1:
-        longest_path = depths[0]
-        nodes_on_longest_path = lst_visited_nodes[0]
+print >> sys.stderr, "longest_list_length: " + str(longest_list_length)
+print >> sys.stderr, "longest_list_index: " + str(longest_list_index)
 
-    else:
-        max_depth = -1
-        max_depth_index = -1
-        for i in xrange(len(depths)):
-            if depths[i] > max_depth:
-                max_depth = depths[i]
-                max_depth_index = i
+index_of_person_in_the_middle = longest_list_length // 2
+print >> sys.stderr, "index_of_person_in_the_middle: " + str(index_of_person_in_the_middle)
 
-        longest_path += depths[max_depth_index]
-        nodes_on_longest_path += lst_visited_nodes[max_depth_index]
+person_in_the_middle = persons[0]
+# find element which name == lst_visited_nodes[avg_item]
+for i in xrange(len(persons)):
+    if persons[i].get_name() == lst_visited_nodes[longest_list_index][index_of_person_in_the_middle]:
+        person_in_the_middle = persons[i]
+        break
 
-    #difference_between_longest_paths = longest_path
-    #number_of_nodes_to_move = difference_between_longest_paths // 2
-    # for node in nodes_on_longest_path:
-    #     print >> sys.stderr, "lst of nodes: " + str(node)
-    # for d in depths:
-    #     print >> sys.stderr, "depth: " + str(d)
-    # print >> sys.stderr, "diff: " + str(difference_between_longest_paths)
-    # print >> sys.stderr, "number: " + str(number_of_nodes_to_move)
-    # index_of_best_node = nodes_on_longest_path[number_of_nodes_to_move-1]
-    index_of_best_node = nodes_on_longest_path[0]
+print >> sys.stderr, "person_in_the_middle: " + str(person_in_the_middle.get_name())
 
-    for person in persons:
-        person.mark_as_not_visited()
+depths, lst_visited_nodes = propagate(person_in_the_middle, persons, existing_nodes, recurse=False)
 
-    depths, lst_visited_nodes = propagate(persons[index_of_best_node], persons, existing_nodes, recurse=False)
+print >> sys.stderr, "depths: " + str(depths)
+print >> sys.stderr, "lst_visited_nodes: " + str(lst_visited_nodes)
 
+longest_list_of_visited_nodes = max([len(l) for l in lst_visited_nodes])
+print >> sys.stderr, "longest_list_of_visited_nodes: " + str(longest_list_of_visited_nodes)
 
-
-    if max(depths) >= previous_depth:
-        current_depth = previous_depth
-        flag_continue = False
-    else:
-        previous_depth = current_depth
-        current_depth = max(depths)
-
-    print >> sys.stderr, "final depth: " + str(max(depths)-1)
+longest_list_length = max([len(l) for l in lst_visited_nodes])
 
 # for depth in depths:
 #     print >> sys.stderr, "Depth: " + str(depth)
 
 # The minimal amount of steps required to completely propagate the advertisement
-print current_depth-1
+print longest_list_length
