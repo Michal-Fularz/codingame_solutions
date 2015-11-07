@@ -1,10 +1,11 @@
 __author__ = 'Amin'
 
+# COMPLETED
+# PYTHON 3.x
+
 import sys
 import math
 
-# COMPLETED
-# PYTHON 3.x
 
 n = int(input())
 whole_file = ""

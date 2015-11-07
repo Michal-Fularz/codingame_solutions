@@ -1,5 +1,7 @@
 __author__ = 'Amin'
 
+import sys
+import math
 
 """ A Python Class
 A simple Python graph class, demonstrating the essential facts and functionalities of graphs.
@@ -61,6 +63,9 @@ class Graph(object):
                 if {neighbour, vertex} not in edges:
                     edges.append({vertex, neighbour})
         return edges
+
+    def get_vertex_additional_info(self, name):
+        return self.additional_info_dict[name]
 
     def find_path(self, start, end, path=[]):
         path = path + [start]
@@ -157,84 +162,62 @@ class Graph(object):
         return res
 
 
-if __name__ == "__main__":
-    # TODO: use unit test to test this module
+class Stop:
+    def __init__(self, identifier, full_name, latitude, longitude, type):
+        self.identifier = identifier
+        self.full_name = full_name
+        self.latitude = latitude
+        self.longitude = longitude
+        self.type = type
 
-    # g = { "a" : ["d", "e"],
-    #       "b" : ["c"],
-    #       "c" : ["b", "c", "d", "e"],
-    #       "d" : ["a", "c"],
-    #       "e" : ["c", "b"],
-    #       "f" : []
-    #     }
-    #
-    # graph = Graph(g)
-    #
-    # print("Vertices of graph:")
-    # print(graph.vertices())
-    #
-    # print("Edges of graph:")
-    # print(graph.edges())
-    #
-    # print("Add vertex:")
-    # graph.add_vertex("z")
-    #
-    # print("Vertices of graph:")
-    # print(graph.vertices())
-    #
-    # print("Add an edge:")
-    # graph.add_edge({"a", "z"})
-    #
-    # print("Vertices of graph:")
-    # print(graph.vertices())
-    #
-    # print("Edges of graph:")
-    # print(graph.edges())
-    #
-    # print('Adding an edge {"x","y"} with new vertices:')
-    # graph.add_edge({"x", "y"})
-    # print("Vertices of graph:")
-    # print(graph.vertices())
-    # print("Edges of graph:")
-    # print(graph.edges())
-    #
-    # print("Find path between a and b:")
-    # print(graph.find_path("a", "b"))
-    #
-    # print("Find all paths between a and b:")
-    # print(graph.find_all_paths("a", "b"))
-    #
-    # print("Find shortest path between a and b:")
-    # print(graph.find_shortest_path("a", "b"))
-    #
-    # print("Find logest path between a and b:")
-    # print(graph.find_longest_path("a", "b"))
-    #
-    # g = { "0" : ["1"],
-    #       "1" : ["0", "2"],
-    #       "2" : ["1", "3", "4"],
-    #       "3" : ["2"],
-    #       "4" : ["2"],
-    #     }
-    #
-    # graph = Graph(g)
+    def __str__(self):
+        res = ""
+        res += str(self.identifier) + ", "
+        res += str(self.full_name) + ", "
+        res += str(self.latitude) + ", "
+        res += str(self.longitude) + ", "
+        res += str(self.type)
 
-    graph = Graph()
-    graph.add_edge(("0", "1"))
-    graph.add_edge(("1", "0"))
-    graph.add_edge(("1", "2"))
-    graph.add_edge(("2", "1"))
-    graph.add_edge(("2", "3"))
-    graph.add_edge(("3", "2"))
-    graph.add_edge(("2", "4"))
-    graph.add_edge(("4", "2"))
+        return res
 
-    print(graph)
 
-    print("Find all paths from 0:")
-    print(graph.find_all_paths_from_vertex("0"))
+def calc_distance(latitudeA, longitudeA, latitudeB, longitudeB):
+    x = (longitudeB - longitudeA) * math.cos((latitudeA + latitudeB) / 2)
+    y = latitudeB - latitudeA
+    d = math.sqrt(x*x + y*y) * 6371
+    return d
 
-    print("Vertices with 1 neighbour:")
-    vertices_with_1_edge = graph.get_vertices_with_n_edges(1)
-    print(vertices_with_1_edge)
-    print(vertices_with_1_edge[1])
+start_point = input()
+end_point = input()
+n = int(input())
+
+g = Graph()
+
+for i in range(n):
+    stop_name = input()
+    elements = stop_name.split(",")
+
+    new_stop_info = Stop(elements[0], elements[1].replace('"', ""), elements[3], elements[4], elements[7])
+    #print("new_stop_info: " + str(new_stop_info), file=sys.stderr)
+    g.add_vertex(new_stop_info.identifier, new_stop_info)
+
+m = int(input())
+for i in range(m):
+    route = input()
+    stops = route.split(" ")
+    g.add_edge((stops[0], stops[1]))
+
+#print(g, file=sys.stderr)
+
+shortest_path = g.find_all_paths(start_point, end_point)
+
+print("shortest_path: " + str(shortest_path), file=sys.stderr)
+
+r = ""
+for stop in shortest_path:
+    r += g.get_vertex_additional_info(stop).full_name + "\n"
+
+# Write an action using print
+# To debug: print("Debug messages...", file=sys.stderr)
+
+print(r[:-1])
