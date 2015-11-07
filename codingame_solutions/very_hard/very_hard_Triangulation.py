@@ -131,7 +131,6 @@ class Building:
 
                 self.map[0:y_start, :] = -1
 
-
             # this part is done only when the right row is chosen
             elif batman.direction_current == Direction.left:
                 distance_traveled = batman.x_previous - batman.x_current
@@ -186,26 +185,32 @@ class Building:
 
         direction = batman.direction_current
 
+        if bomb_distance == "WARMER":
+            # last time we moved in right direction
+            direction = bat.direction_current
+
+        elif bomb_distance == "COLDER":
+            if direction == Direction.up or direction == Direction.down:
+                direction = Direction.right
+            else:
+                direction = Direction.up
+
+        elif bomb_distance == "SAME":
+            pass
+
+        print("First direction guess: " + str(direction), file=sys.stderr)
+
         free_cells_in_current_direction = self.__count_number_of_free_cells_in_that_direction(bat.x_current, bat.y_current, direction)
         free_cells_in_opposing_direction = self.__count_number_of_free_cells_in_that_direction(bat.x_current, bat.y_current, Direction.get_opposite(direction))
 
         print("Free cells in current direction: " + str(free_cells_in_current_direction), file=sys.stderr)
         print("Free cells in opposing direction: " + str(free_cells_in_opposing_direction), file=sys.stderr)
 
-        if bomb_distance == "WARMER":
-            # last time we moved in right direction
-            direction = bat.direction_current
+        if free_cells_in_opposing_direction > free_cells_in_current_direction:
+            direction = Direction.get_opposite(direction)
+            print("Change direction in work!", file=sys.stderr)
 
-            if free_cells_in_opposing_direction > free_cells_in_current_direction:
-                direction = Direction.get_opposite(bat.direction_current)
-                print("Change direction in work!", file=sys.stderr)
-
-        elif bomb_distance == "COLDER":
-            direction = Direction.get_opposite(bat.direction_current)
-        elif bomb_distance == "SAME":
-            pass
-
-        print("First direction guess: " + str(direction), file=sys.stderr)
+        print("Second direction guess: " + str(direction), file=sys.stderr)
 
         # check if move is possible
         if not self.__check_if_there_are_free_cells_in_that_direction(bat.x_current, batman.y_current, direction):
@@ -218,9 +223,11 @@ class Building:
             if self.__check_if_there_are_free_cells_in_that_direction(bat.x_current, batman.y_current, Direction.left):
                 return Direction.left
 
+        print("Final direction guess: " + str(direction), file=sys.stderr)
+
         return direction
 
-    def __count_number_of_free_cells_in_that_direction(self, current_x, current_y, direction ):
+    def __count_number_of_free_cells_in_that_direction(self, current_x, current_y, direction):
         free_cells = 0
         if direction == Direction.up:
             # check column above
@@ -280,10 +287,10 @@ class Building:
 
         if current_y < (self.height // 2):
             direction = Direction.down
-            new_position = self.height//2# - current_y
+            new_position = self.height - current_y # self.height//2
         else:
             direction = Direction.up
-            new_position = self.height//2# - current_y
+            new_position = self.height - current_y # self.height//2
 
         return direction, new_position
 
@@ -317,9 +324,9 @@ class Building:
 
         if not self.odd_movement:
             if direction == Direction.up:
-                pass
+                #pass
                 #next_position = available_points[int(0.25*len(available_points))]
-                #next_position = min(available_points)
+                next_position = min(available_points)
             elif direction == Direction.down:
                 #pass
                 #next_position = available_points[int(0.75*len(available_points))]
@@ -329,9 +336,9 @@ class Building:
                 #next_position = available_points[int(0.25*len(available_points))]
                 next_position = min(available_points)
             elif direction == Direction.right:
-                pass
+                #pass
                 #next_position = available_points[int(0.75*len(available_points))]
-                #next_position = max(available_points)
+                next_position = max(available_points)
             #self.odd_movement = True
 
         # if self.odd_movement:
@@ -346,6 +353,67 @@ class Building:
         #     self.odd_movement = False
 
         return int(next_position)
+
+    def find_next_position2(self, current_x, current_y, direction):
+
+        available_points = []
+
+        if direction == Direction.up:
+            for y in range(0, current_y):
+                if self.map[y][current_x] == 0:
+                    available_points.append(y)
+        elif direction == Direction.down:
+            for y in range(current_y+1, self.height):
+                if self.map[y][current_x] == 0:
+                    available_points.append(y)
+        elif direction == Direction.right:
+            for x in range(current_x+1, self.width):
+                if self.map[current_y][x] == 0:
+                    available_points.append(x)
+        elif direction == Direction.left:
+            for x in range(0, current_x):
+                if self.map[current_y][x] == 0:
+                    available_points.append(x)
+
+
+        #available_points.sort()
+        next_position = sum(available_points) / len(available_points)
+
+        #if next_position - int(next_position) > 0:
+            #next_position += 1
+
+        if not self.odd_movement:
+            if direction == Direction.up:
+                #pass
+                #next_position = available_points[int(0.25*len(available_points))]
+                next_position = max(available_points)
+            elif direction == Direction.down:
+                #pass
+                #next_position = available_points[int(0.75*len(available_points))]
+                next_position = min(available_points)
+            elif direction == Direction.left:
+                #pass
+                #next_position = available_points[int(0.25*len(available_points))]
+                next_position = max(available_points)
+            elif direction == Direction.right:
+                #pass
+                #next_position = available_points[int(0.75*len(available_points))]
+                next_position = min(available_points)
+            #self.odd_movement = True
+
+        # if self.odd_movement:
+        #     if direction == Direction.up:
+        #         next_position = available_points[int(0.25*len(available_points))]
+        #     elif direction == Direction.down:
+        #         next_position = available_points[int(0.75*len(available_points))]
+        #     elif direction == Direction.left:
+        #         next_position = available_points[int(0.25*len(available_points))]
+        #     elif direction == Direction.right:
+        #         next_position = available_points[int(0.75*len(available_points))]
+        #     self.odd_movement = False
+
+        return int(next_position)
+
 
 
 class Batman:
@@ -450,10 +518,22 @@ while 1:
 
     building.update_map(batman, bomb_dist)
 
+    if bomb_dist == "COLDER":
+        current_direction = Direction.get_opposite(batman.direction_current)
+        new_pos = building.find_next_position2(batman.x_current, batman.y_current, current_direction)
+        batman.update_based_on_direction2(current_direction, new_pos)
+        print("Special case. New direction: " + str(current_direction), file=sys.stderr)
+        print("New position: " + str(new_pos), file=sys.stderr)
+        bomb_dist = "WARMER"
+        building.update_map(batman, bomb_dist)
+        bomb_dist = "COLDER"
+
+    print(building.map, file=sys.stderr)
+
     current_direction = building.find_movements_based_on_distance(batman, bomb_dist)
     print("Direction choosen: " + str(current_direction), file=sys.stderr)
     new_pos = building.find_next_position(batman.x_current, batman.y_current, current_direction)
-    print("Distance available: " + str(new_pos), file=sys.stderr)
+    print("New position: " + str(new_pos), file=sys.stderr)
     batman.update_based_on_direction2(current_direction, new_pos)
     print(batman.get_as_string(), file=sys.stderr)
 
