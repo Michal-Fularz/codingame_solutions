@@ -430,6 +430,13 @@ class Batman:
         self.direction_current = Direction.up
         self.direction_previous = Direction.up
 
+    def set_position(self, x, y):
+        self.x_previous = self.x_current
+        self.y_previous = self.y_current
+
+        self.x_current = x
+        self.y_current = y
+
     def update(self, dx, dy):
         self.x_previous = self.x_current
         self.y_previous = self.y_current
@@ -476,68 +483,69 @@ class Batman:
 
         return r
 
+if __name__ == '__main__':
 
-# w: width of the building.
-# h: height of the building.
-w, h = [int(i) for i in input().split()]
-n = int(input())  # maximum number of turns before game over.
-x0, y0 = [int(i) for i in input().split()]
+    # w: width of the building.
+    # h: height of the building.
+    w, h = [int(i) for i in input().split()]
+    n = int(input())  # maximum number of turns before game over.
+    x0, y0 = [int(i) for i in input().split()]
 
-building = Building(w, h)
-batman = Batman(x0, y0)
+    building = Building(w, h)
+    batman = Batman(x0, y0)
 
-# IDEAS:
-# use abs to calculate distance instead of power and square root - maybe it will be faster
-# THOSE TWO METRICS GIVES DIFFERENT VALUES
-# b = np.zeros((5, 5))
-# for i in range(5):
-#     for j in range(5):
-#         b[i][j] = math.sqrt(pow(i-3, 2)+pow(j-4, 2))
-# print(b)
-#
-# a = np.zeros((5, 5))
-# for i in range(5):
-#     for j in range(5):
-#         a[i][j] = abs(i-3) + abs(j-4)
-# print(a)
+    # IDEAS:
+    # use abs to calculate distance instead of power and square root - maybe it will be faster
+    # THOSE TWO METRICS GIVES DIFFERENT VALUES
+    # b = np.zeros((5, 5))
+    # for i in range(5):
+    #     for j in range(5):
+    #         b[i][j] = math.sqrt(pow(i-3, 2)+pow(j-4, 2))
+    # print(b)
+    #
+    # a = np.zeros((5, 5))
+    # for i in range(5):
+    #     for j in range(5):
+    #         a[i][j] = abs(i-3) + abs(j-4)
+    # print(a)
 
-bomb_dist = input()  # Current distance to the bomb compared to previous distance (COLDER, WARMER, SAME or UNKNOWN)
-
-# first round is special - bomb_distance = UNKNOWN
-current_direction, new_pos = building.find_movements_first_round(batman.x_current, batman.y_current)
-
-batman.update_based_on_direction2(current_direction, new_pos)
-batman.direction_previous = current_direction
-
-print(str(batman.x_current) + " " + str(batman.y_current))
-
-# game loop
-while 1:
-    previous_bomb_dist = bomb_dist
     bomb_dist = input()  # Current distance to the bomb compared to previous distance (COLDER, WARMER, SAME or UNKNOWN)
 
-    building.update_map(batman, bomb_dist)
+    # first round is special - bomb_distance = UNKNOWN
+    current_direction, new_pos = building.find_movements_first_round(batman.x_current, batman.y_current)
 
-    if bomb_dist == "COLDER":
-        current_direction = Direction.get_opposite(batman.direction_current)
-        new_pos = building.find_next_position2(batman.x_current, batman.y_current, current_direction)
-        batman.update_based_on_direction2(current_direction, new_pos)
-        print("Special case. New direction: " + str(current_direction), file=sys.stderr)
-        print("New position: " + str(new_pos), file=sys.stderr)
-        bomb_dist = "WARMER"
-        building.update_map(batman, bomb_dist)
-        bomb_dist = "COLDER"
-
-    print(building.map, file=sys.stderr)
-
-    current_direction = building.find_movements_based_on_distance(batman, bomb_dist)
-    print("Direction choosen: " + str(current_direction), file=sys.stderr)
-    new_pos = building.find_next_position(batman.x_current, batman.y_current, current_direction)
-    print("New position: " + str(new_pos), file=sys.stderr)
     batman.update_based_on_direction2(current_direction, new_pos)
-    print(batman.get_as_string(), file=sys.stderr)
-
-    # Write an action using print
-    # To debug: print("Debug messages...", file=sys.stderr)
+    batman.direction_previous = current_direction
 
     print(str(batman.x_current) + " " + str(batman.y_current))
+
+    # game loop
+    while 1:
+        previous_bomb_dist = bomb_dist
+        bomb_dist = input()  # Current distance to the bomb compared to previous distance (COLDER, WARMER, SAME or UNKNOWN)
+
+        building.update_map(batman, bomb_dist)
+
+        if bomb_dist == "COLDER":
+            current_direction = Direction.get_opposite(batman.direction_current)
+            new_pos = building.find_next_position2(batman.x_current, batman.y_current, current_direction)
+            batman.update_based_on_direction2(current_direction, new_pos)
+            print("Special case. New direction: " + str(current_direction), file=sys.stderr)
+            print("New position: " + str(new_pos), file=sys.stderr)
+            bomb_dist = "WARMER"
+            building.update_map(batman, bomb_dist)
+            bomb_dist = "COLDER"
+
+        print(building.map, file=sys.stderr)
+
+        current_direction = building.find_movements_based_on_distance(batman, bomb_dist)
+        print("Direction choosen: " + str(current_direction), file=sys.stderr)
+        new_pos = building.find_next_position(batman.x_current, batman.y_current, current_direction)
+        print("New position: " + str(new_pos), file=sys.stderr)
+        batman.update_based_on_direction2(current_direction, new_pos)
+        print(batman.get_as_string(), file=sys.stderr)
+
+        # Write an action using print
+        # To debug: print("Debug messages...", file=sys.stderr)
+
+        print(str(batman.x_current) + " " + str(batman.y_current))
