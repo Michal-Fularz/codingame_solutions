@@ -1,5 +1,8 @@
 __author__ = 'Amin'
 
+# COMPLETED
+# PYTHON 3.x
+
 import sys
 import math
 
@@ -15,7 +18,7 @@ class Player:
             deck_as_text += str(card)
             deck_as_text += ", "
 
-        return deck_as_text
+        return deck_as_text[:-1]
 
     def get_top_card(self):
         return self.deck.pop(0)
@@ -35,7 +38,7 @@ class Player:
                 #self.deck.append(my_card)
                 #self.deck.append(opponent_card)
         else:
-            print("Wrong number of cards from players!")
+            print("Wrong number of cards from players!", file=sys.stderr)
 
 
 def convert_card_name_to_value(card_name):
@@ -68,6 +71,7 @@ def convert_card_name_to_value(card_name):
             card_value = 14
         else:
             card_value = -2
+            print("Unrecognized card value!", file=sys.stderr)
 
     return card_value
 
@@ -82,6 +86,9 @@ def play_war(p1, p2, used_cards_p1, used_cards_p2):
     card_from_p1 = p1.get_top_card()
     card_from_p2 = p2.get_top_card()
 
+    used_cards_p1.append(card_from_p1)
+    used_cards_p2.append(card_from_p2)
+
     if card_from_p1 > card_from_p2:
         winner_of_war = 1
     elif card_from_p1 < card_from_p2:
@@ -89,13 +96,8 @@ def play_war(p1, p2, used_cards_p1, used_cards_p2):
     else:
         winner_of_war = play_war(p1, p2, used_cards_p1, used_cards_p2)
 
-    used_cards_p1.append(card_from_p1)
-    used_cards_p2.append(card_from_p2)
-
     return winner_of_war
 
-# Auto-generated code below aims at helping you parse
-# the standard input according to the problem statement.
 
 player_1 = Player(1)
 player_2 = Player(2)
