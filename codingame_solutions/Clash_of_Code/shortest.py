@@ -3,8 +3,8 @@ __author__ = 'Amin'
 
 # convert value provided as HH:MM to a number of minutes
 def hours_and_minutes_to_minutes():
-    d=input()
-    print((int(d[0])*60+int(d[1])*6+int(d[3])*10+int(d[4])))
+ d=input()
+ print((int(d[0])*60+int(d[1])*6+int(d[3])*10+int(d[4])))
 
 
 # check if provided number is lucky - sum of first three digits is equal to sum of next three digits
@@ -12,9 +12,9 @@ def hours_and_minutes_to_minutes():
 # 111003 true
 # 202121 true
 def lucky_number():
-    l=[int(i) for i in input()]
-    if sum(l[0:3])==sum(l[3:6]):print "true"
-    else:print "false"
+ l=[int(i) for i in input()]
+ if sum(l[0:3])==sum(l[3:6]):print("true")
+ else:print("false")
 
 
 # Two adventurers are going to duel, each of them has health points HP1 and HP2 and apply D1 and D2 damage at their opponents each round.
@@ -71,13 +71,13 @@ def duel():
 # ctWor
 # ld
 def split_text_into_columns():
-    s=input().replace(" ", "")
-    c=int(input())
-    r=s[0]
-    for i in range(1,len(s)):
-     if i%c==0:r+="\n"
-     r+=s[i]
-    print(r)
+ s=input().replace(" ", "")
+ c=int(input())
+ r=s[0]
+ for i in range(1,len(s)):
+  if i%c==0:r+="\n"
+  r+=s[i]
+ print(r)
 
 
 # Your program must perform a binary OR on two binary numbers given through the standard input and print the result to the standard output.
@@ -99,12 +99,12 @@ def split_text_into_columns():
 # Input: 001 011
 # Output: 011
 def operation_or():
-    n,m=input().split()
-    r=""
-    for k,l in zip(n,m):
-     if k=="1" or l=="1":r+="1"
-     else:r+="0"
-    print(r)
+ n,m=input().split()
+ r=""
+ for k,l in zip(n,m):
+  if k=="1" or l=="1":r+="1"
+  else:r+="0"
+ print(r)
 
 
 # Your program must find the point that is exactly between two other points.
@@ -112,52 +112,115 @@ def operation_or():
 # The midpoint of this line segment is the target point.
 # Be careful with float numbers and use . as a decimal mark.
 def midpoint():
-    x,y=[int(i)for i in input().split()]
-    X,Y=[int(i)for i in input().split()]
-    a=(x+X)/2
-    b=(y+Y)/2
-    if a-int(a)==0:a=int(a)
-    if b-int(b)==0:b=int(b)
-    print(str(a)+" "+str(b))
+ x,y=[int(i)for i in input().split()]
+ X,Y=[int(i)for i in input().split()]
+ a=(x+X)/2
+ b=(y+Y)/2
+ if a-int(a)==0:a=int(a)
+ if b-int(b)==0:b=int(b)
+ print(str(a)+" "+str(b))
 
 
 # How many times is the most common letter used in a given string?
 # The string only contains lowercase letters and spaces.
 def most_common_letter():
-    w=input()
-    l=[0]*40
-    for c in w:
-     if c!=" ":l[ord(c)-97]+=1
-    print(max(l))
+ l=[0]*40
+ for c in input():
+  if c!=" ":l[ord(c)-97]+=1
+ print(max(l))
 
 # list of values is given, sort them and print
 def sort_values():
-    n=int(raw_input())
-    v=[]
-    for i in range(n):
-        v.append(int(raw_input()))
-    v.sort()
-    print(v)
+ v=[]
+ for i in range(int(input())):
+  v.append(int(input()))
+ v.sort()
+ print(v)
 
 # TODO:
-The Hofstadter Conway sequence is defined like so:
-a(1) = 1.
-a(2) = 1.
-a(n) = a(a(n - 1)) + a(n - a(n - 1)), for n > 2.
+# The Hofstadter Conway sequence is defined like so:
+# a(1) = 1.
+# a(2) = 1.
+# a(n) = a(a(n - 1)) + a(n - a(n - 1)), for n > 2.
+# Your program must ouput the first N terms of this sequence.
 
-Your program must ouput the first N terms of this sequence.
+def a(n):
+ if n<3:
+     return 1
+ else:
+  return a(a(n-1)+a(n-a(n-1)))
+ # try converting to this:
+ #return(a(a(n-1)+a(n-a(n-1))),1)[n<3]
+
+# C version from Kuba:
+# N,i;
+# int a(int b){return b<3?1:(a(a(b-1))+a(b-a(b-1)));};
+# int main()
+# {
+# scanf("%d",&N);
+# for(i=1;i<N;i++)
+# printf("%d ",a(i));
+# printf("%d\n"",a(N));
+# }
 
 
-N,i;
-int a(int b){return b<3?1:(a(a(b-1))+a(b-a(b-1)));};
-int main()
-{
-scanf("%d",&N);
-for(i=1;i<N;i++)
-printf("%d ",a(i));
-printf("%d\n"",a(N));
-}
+Given a certain number of blocks N, your program must return the height of the tallest possible 2D pyramid that can be created, followed by the number of unused blocks remaining.
 
+For example, a pyramid of height 3 contains 6 blocks: 3 for the first level, 2 for the second level and 1 for the last level.
+
+INPUT:
+Line 1: An integer N, the number of blocks to be used for the pyramid.
+
+OUTPUT:
+Line 1: Two integers H and R, where H is the greatest possible pyramid height, and R is the remaining unused blocks.
+
+CONSTRAINTS:
+0 ? N < 50000
+
+EXAMPLE:
+Input
+10
+Output
+4 0
+
+import sys
+
+n=int(input())
+
+flag_continue = True
+h=0
+r=n
+
+while flag_continue:
+    print("h: " + str(h), file=sys.stderr)
+    print("r: " + str(r), file=sys.stderr)
+
+    if r>=(h+1):
+        h+=1
+        r-=h
+    else:
+        flag_continue = False
+
+# Write an action using print
+# To debug: print("Debug messages...", file=sys.stderr)
+
+print(str(h) + " " + str(r))
+
+f=1
+h=0
+r=int(input())
+while f:
+ if r>=(h+1):h+=1;r-=h
+ else:f=0
+print(str(h)+" "+str(r))
+
+
+f,h=1,0
+r=int(input())
+while f:
+ if r>=h+1:h+=1;r-=h
+ else:f=0
+print(str(h)+" "+str(r))
 
 if __name__ == "__main__":
     #split_text_into_columns()

@@ -44,10 +44,18 @@ def l33t(s):
 def count_letters(s):
     count = 0
     for c in s:
-        if c.lower() or c.upper():
+        if c.islower() or c.isupper():
             count += 1
 
     return count
+
+
+def only_capital(s):
+    r = ""
+    for c in s:
+        if c.isalpha():
+            if c.isupper():
+                r += c
 
 
 def sum_of_letters_values(s):
@@ -69,7 +77,7 @@ def sort_tuples():
 
     elements_sorted = sorted(elements, key=lambda tup: tup[1])
     r = ""
-    for x, y in reversed(s):
+    for x, y in reversed(elements_sorted):
         r += x + " "
 
     print(r[:-1])
@@ -86,11 +94,40 @@ def linear_function():
         y = a * x + b
         print(y)
 
+import sys
+import math
+
+# Auto-generated code below aims at helping you parse
+# the standard input according to the problem statement.
+
+n = int(input())
+l = []
+for i in range(n):
+    x = int(input())
+    l.append(x)
+
+l.sort()
+
+r = ""
+for v in reversed(l):
+    r += str(v) + " "
+
+# Write an action using print
+# To debug: print("Debug messages...", file=sys.stderr)
+
+print(r[:-1])
+
+
 
 if __name__ == "__main__":
+    #a = [int(x) for x in input().split()]
+    #print(a[1])
+
+    sort_tuples()
+
     linear_function()
-    s = raw_input()
-    print dna(s)
-    print dna_if(s)
-    print l33t(s)
-    print count_letters(s)
+    s = input()
+    print(dna(s))
+    print(dna_if(s))
+    print(l33t(s))
+    print(count_letters(s))

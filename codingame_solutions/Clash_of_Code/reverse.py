@@ -48,12 +48,12 @@ def upper_letter():
 # Test 6 -
 # Provided Input: 98304 65536
 # Expected Output: 32768
-def _gcd( m, n ):
-    while True: # petla, czyli "wroc do kroku", tylko ze oznaczone u celu, a nie na poczatku skoku. W pythonie nie ma goto (prawie...;))
-        r = m % n # przypisanie reszty
-        if not r: # jesli r rowne 0 to
-            return n # zwroc n
-        m, n = n, r # w przeciwnym przypadku przypisz co trzeba i powtorz
+def _gcd(m, n):
+    while True:  # petla, czyli "wroc do kroku", tylko ze oznaczone u celu, a nie na poczatku skoku. W pythonie nie ma goto (prawie...;))
+        r = m % n  # przypisanie reszty
+        if not r:  # jesli r rowne 0 to
+            return n  # zwroc n
+        m, n = n, r  # w przeciwnym przypadku przypisz co trzeba i powtorz
 
 
 def greatest_common_divisor():
@@ -86,12 +86,12 @@ def _convert_to_bin_string(x):
     flag_c = True
     v = x
     while flag_c:
-        if v>1:
-            if v%2 == 1:
+        if v > 1:
+            if v % 2 == 1:
                 l.append(1)
             else:
                 l.append(0)
-            v=v//2
+            v = v // 2
         else:
             if v == 1:
                 l.append(1)
@@ -99,9 +99,9 @@ def _convert_to_bin_string(x):
                 l.append(0)
             flag_c = False
 
-    r=""
+    r = ""
     for i in reversed(l):
-        r+=str(i)
+        r += str(i)
     return r
 
 
@@ -110,9 +110,51 @@ def print_as_binary():
 
     for i in range(n):
         x = int(input())
-        print(_convert_to_bin_string(x))
-        print(bin(x)[2:])
+        # three different ways
+        #print(_convert_to_bin_string(x))
+        #print(bin(x)[2:])
         print("{0:b}".format(x))
+
+
+import sys
+import math
+
+# Auto-generated code below aims at helping you parse
+# the standard input according to the problem statement.
+
+def convert_to_int(c):
+    if c == "F":
+        return 15
+    elif c == "E":
+        return 14
+    elif c == "D":
+        return 13
+    elif c == "C":
+        return 12
+    elif c == "B":
+        return 11
+    elif c == "A":
+        return 10
+    else:
+        return int(c)
+
+#x = int("deadbeef", 16)
+number = input()
+
+print("number: " + str(number), file=sys.stderr)
+
+r=0
+for i, c in enumerate(reversed(number)):
+    v = convert_to_int(c)
+    r += 16**i * v
+
+
+
+# Write an action using print
+# To debug: print("Debug messages...", file=sys.stderr)
+
+print(r)
+
 
 
 if __name__ == "__main__":
