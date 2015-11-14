@@ -182,6 +182,8 @@ morse_dictionary = MorseDictionaryElement(number=0)
 # morse_dictionary.add("HE")
 # morse_dictionary.add("HELL")
 # morse_dictionary.add("HELLO")
+# morse_dictionary.add("LL")
+# morse_dictionary.add("LLO")
 # morse_dictionary.add("OWORLD")
 # morse_dictionary.add("WORLD")
 # morse_dictionary.add("TEST")
@@ -194,12 +196,19 @@ morse_dictionary = MorseDictionaryElement(number=0)
 #
 # l = "......-...-..---.-----.-..-..-.."
 
-l = input()
-
-n = int(input())
+f = open("very_hard_The_Resistance_test_4.txt")
+l = f.readline()
+n = int(f.readline())
 for i in range(n):
-    w = input()
+    w = f.readline()
     morse_dictionary.add(w)
+
+# l = input()
+#
+# n = int(input())
+# for i in range(n):
+#     w = input()
+#     morse_dictionary.add(w)
 
 print("morse_dictionary.count_words(): " + str(morse_dictionary.count_words()), file=sys.stderr)
 print("morse_dictionary.count_elements(): " + str(morse_dictionary.count_elements()), file=sys.stderr)
@@ -211,7 +220,7 @@ part_to_use = deque(iterable=list(l))
 words_thus_far = []
 solutions.append(Solution(words_thus_far, position_in_dictionary, part_to_use, []))
 
-result = []
+results = []
 
 while len(solutions) > 0:
 
@@ -226,16 +235,29 @@ while len(solutions) > 0:
             if current_solution.position_in_dictionary.flag_holds_word:
                 word_found = current_solution.position_in_dictionary.word
                 #print("word_found: " + str(word_found), file=sys.stderr)
-                solutions.append(Solution(copy.deepcopy(current_solution.words_thus_far), copy.deepcopy(current_solution.position_in_dictionary), copy.deepcopy(current_solution.part_to_use)))
+                solutions.append(Solution(
+                    copy.deepcopy(current_solution.words_thus_far),
+                    copy.deepcopy(current_solution.position_in_dictionary),
+                    copy.deepcopy(current_solution.part_to_use),
+                    copy.deepcopy(current_solution.part_in_use)
+                ))
                 current_solution.words_thus_far.append(word_found)
                 current_solution.part_in_use.clear()
                 current_solution.position_in_dictionary = morse_dictionary
 
-    result.append(current_solution.words_thus_far)
+    # print("current_solution.part_in_use: " + str(current_solution.part_in_use), file=sys.stderr)
+    # print("current_solution.words_thus_far: " + str(current_solution.words_thus_far), file=sys.stderr)
+    if current_solution is not None and len(current_solution.part_in_use) == 0:
+        results.append(current_solution.words_thus_far)
 
-#print("result: " + str(result), file=sys.stderr)
+r = ""
+for result in results:
+    r += str(result) + "\n"
+
+print("result: " + r, file=sys.stderr)
 
 # Write an action using print
 # To debug: print("Debug messages...", file=sys.stderr)
 
-print(max([len(words) for words in result]))
+#print(max([len(words) for words in result]))
+print(len(results))
