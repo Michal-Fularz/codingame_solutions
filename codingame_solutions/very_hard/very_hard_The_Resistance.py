@@ -5,10 +5,10 @@ import math
 from collections import deque
 import copy
 
-
 class MorseDictionaryElement:
-    def __init__(self, sign="x", flag_holds_word=False, word=""):
+    def __init__(self, sign="x", flag_holds_word=False, word="", number=0):
         self.sign = sign
+        self.number = number
         self.next = []
         self.flag_holds_word = flag_holds_word
         self.word = word
@@ -69,12 +69,12 @@ class MorseDictionaryElement:
         for element in self.next:
             if element.sign == sign:
                 return element
-        print("Error, next not found!", file=sys.stderr)
+        #print("Error, next not found!", file=sys.stderr)
         return None
 
     def __add_sign(self, sign, flag_holds_word=False, word=""):
         if not self.contains(sign):
-            new_element = MorseDictionaryElement(sign, flag_holds_word, word)
+            new_element = MorseDictionaryElement(sign, flag_holds_word, word, self.number+1)
             self.next.append(new_element)
             return new_element
         else:
@@ -103,7 +103,8 @@ class MorseDictionaryElement:
 
     def count_elements(self):
         # do not take into account first element (root)
-        if self.sign == "x":
+        #if self.sign == "x":
+        if self.sign != "." and self.sign != "-":
             count = 0
         else:
             count = 1
@@ -125,16 +126,18 @@ class MorseDictionaryElement:
 
         return count
 
-    def get_as_string(self):
-        s = ""
-
-        s += self.sign + ", "
+    def get_as_string(self, s=""):
+        #s = ""
+        s += str(self.number) + ": " + self.sign + ", "
+        s_until_now = s
         if self.flag_holds_word:
             s += self.word + "\n"
-        if self.sign == "x":
+        #elif self.sign == "x":
+        elif self.sign != "." and self.sign != "-":
             s += "\n"
+
         for element in self.next:
-            s += element.get_as_string()
+            s += element.get_as_string(copy.deepcopy(s_until_now))
 
         return s
 
@@ -154,13 +157,14 @@ class MorseDictionaryElement:
 
 
 class Solution:
-    def __init__(self, words_thus_far, part_in_use, part_to_use):
+    def __init__(self, words_thus_far, position_in_dictionary, part_to_use, part_in_use=[]):
         self.words_thus_far = words_thus_far
         self.part_in_use = part_in_use
+        self.position_in_dictionary = position_in_dictionary
         self.part_to_use = part_to_use
 
 
-morse_dictionary = MorseDictionaryElement()
+morse_dictionary = MorseDictionaryElement(number=0)
 
 # morse_dictionary.add("HELLO")
 # morse_dictionary.add("PROBLEM?")
@@ -174,11 +178,19 @@ morse_dictionary = MorseDictionaryElement()
 #
 # l = "......-...-..---.-----.-..-..-...--..-.----....-...--"
 
+# morse_dictionary.add("H")
+# morse_dictionary.add("HE")
 # morse_dictionary.add("HELL")
 # morse_dictionary.add("HELLO")
 # morse_dictionary.add("OWORLD")
 # morse_dictionary.add("WORLD")
 # morse_dictionary.add("TEST")
+#
+# print("Word found: " + morse_dictionary.find_word(list("......-...-..")), file=sys.stderr)
+# print("Word found: " + morse_dictionary.find_word(list("......-...-..---")), file=sys.stderr)
+# print("Word found: " + morse_dictionary.find_word(list(".-----.-..-..-..")), file=sys.stderr)
+# print("Word found: " + morse_dictionary.find_word(list("---.-----.-..-..-..")), file=sys.stderr)
+# print("Word found: " + morse_dictionary.find_word(list("-....-")), file=sys.stderr)
 #
 # l = "......-...-..---.-----.-..-..-.."
 
@@ -194,10 +206,10 @@ print("morse_dictionary.count_elements(): " + str(morse_dictionary.count_element
 #print(morse_dictionary.get_as_string(), file=sys.stderr)
 
 solutions = deque()
-part_in_use = deque()
+position_in_dictionary = morse_dictionary
 part_to_use = deque(iterable=list(l))
 words_thus_far = []
-solutions.append(Solution(words_thus_far, part_in_use, part_to_use))
+solutions.append(Solution(words_thus_far, position_in_dictionary, part_to_use, []))
 
 result = []
 
@@ -205,23 +217,23 @@ while len(solutions) > 0:
 
     current_solution = solutions.popleft()
 
-    while len(current_solution.part_to_use) > 0:
+    while len(current_solution.part_to_use) > 0 and current_solution.position_in_dictionary is not None:
         current_sign = current_solution.part_to_use.popleft()
         current_solution.part_in_use.append(current_sign)
-        #print("current_solution.part_in_use: " + str(current_solution.part_in_use), file=sys.stderr)
-        #print("current_solution.part_to_use: " + str(current_solution.part_to_use), file=sys.stderr)
-        #print("current_solution.words_thus_far: " + str(current_solution.words_thus_far), file=sys.stderr)
+        current_solution.position_in_dictionary = current_solution.position_in_dictionary.get_next(current_sign)
 
-        word_found = morse_dictionary.find_word(current_solution.part_in_use)
-        if word_found != "":
-            solutions.append(Solution(copy.deepcopy(current_solution.words_thus_far), copy.deepcopy(current_solution.part_in_use), copy.deepcopy(current_solution.part_to_use)))
-            print("word_found: " + str(word_found), file=sys.stderr)
-            current_solution.words_thus_far.append(word_found)
-            current_solution.part_in_use.clear()
+        if current_solution.position_in_dictionary is not None:
+            if current_solution.position_in_dictionary.flag_holds_word:
+                word_found = current_solution.position_in_dictionary.word
+                #print("word_found: " + str(word_found), file=sys.stderr)
+                solutions.append(Solution(copy.deepcopy(current_solution.words_thus_far), copy.deepcopy(current_solution.position_in_dictionary), copy.deepcopy(current_solution.part_to_use)))
+                current_solution.words_thus_far.append(word_found)
+                current_solution.part_in_use.clear()
+                current_solution.position_in_dictionary = morse_dictionary
 
     result.append(current_solution.words_thus_far)
 
-print("result: " + str(result), file=sys.stderr)
+#print("result: " + str(result), file=sys.stderr)
 
 # Write an action using print
 # To debug: print("Debug messages...", file=sys.stderr)
