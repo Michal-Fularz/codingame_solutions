@@ -6,12 +6,12 @@ from collections import deque
 import copy
 
 class MorseDictionaryElement:
-    def __init__(self, sign="x", flag_holds_word=False, word="", number=0):
+    def __init__(self, sign="x", flag_holds_words=False, number=0):
         self.sign = sign
         self.number = number
         self.next = []
-        self.flag_holds_word = flag_holds_word
-        self.word = word
+        self.flag_holds_words = flag_holds_words
+        self.words = []
         
         self.morse_alphabet = []
         
@@ -72,30 +72,28 @@ class MorseDictionaryElement:
         #print("Error, next not found!", file=sys.stderr)
         return None
 
-    def __add_sign(self, sign, flag_holds_word=False, word=""):
+    def __add_sign(self, sign):
         if not self.contains(sign):
-            new_element = MorseDictionaryElement(sign, flag_holds_word, word, self.number+1)
+            new_element = MorseDictionaryElement(sign, number=self.number+1)
             self.next.append(new_element)
             return new_element
         else:
             return next(x for x in self.next if x.sign == sign)
+
+    # TODO add a possibility that more than one word is stored
+    def __fill_with_word(self, word):
+        self.flag_holds_words = True
+        self.words.append(word)
 
     def __add(self, word_in_morse: list, word: str):
         current_element = self
 
         #print("word: " + str(word) + " in morse: " + str(word_in_morse), file=sys.stderr)
 
-        for sign in word_in_morse[:-1]:
+        for sign in word_in_morse:
             current_element = current_element.__add_sign(sign)
 
-        current_element = current_element.__add_sign(word_in_morse[-1], True, word)
-
-        # check if the new element was created and holds the word
-        if current_element.word == word and current_element.flag_holds_word:
-            pass
-        else:
-            current_element.word = word
-            current_element.flag_holds_word = True
+        current_element.__fill_with_word(word)
 
     def add(self, word):
         word_in_morse = self.__convert_word_to_morse(word)
@@ -116,7 +114,7 @@ class MorseDictionaryElement:
 
     def count_words(self):
         # do not take into account first element (root)
-        if self.flag_holds_word:
+        if self.flag_holds_words:
             count = 1
         else:
             count = 0
@@ -129,15 +127,16 @@ class MorseDictionaryElement:
     def get_as_string(self, s=""):
         #s = ""
         s += str(self.number) + ": " + self.sign + ", "
-        s_until_now = s
-        if self.flag_holds_word:
-            s += self.word + "\n"
+        #s_until_now = s
+        if self.flag_holds_words:
+            s += "".join(self.words) + "\n"
         #elif self.sign == "x":
         elif self.sign != "." and self.sign != "-":
             s += "\n"
 
         for element in self.next:
-            s += element.get_as_string(copy.deepcopy(s_until_now))
+            #s += element.get_as_string(copy.deepcopy(s_until_now))
+            s += element.get_as_string()
 
         return s
 
@@ -153,15 +152,15 @@ class MorseDictionaryElement:
             else:
                 current_element = current_element.get_next(sign)
 
-        return current_element.word
+        return current_element.words
 
 
 class Solution:
-    def __init__(self, words_thus_far, position_in_dictionary, part_to_use, part_in_use=[]):
-        self.words_thus_far = words_thus_far
-        self.part_in_use = part_in_use
+    def __init__(self, position_in_dictionary, words_thus_far=[], part_to_use=deque(), part_in_use=deque()):
         self.position_in_dictionary = position_in_dictionary
+        self.words_thus_far = words_thus_far
         self.part_to_use = part_to_use
+        self.part_in_use = part_in_use
 
 
 morse_dictionary = MorseDictionaryElement(number=0)
@@ -188,62 +187,90 @@ morse_dictionary = MorseDictionaryElement(number=0)
 # morse_dictionary.add("WORLD")
 # morse_dictionary.add("TEST")
 #
-# print("Word found: " + morse_dictionary.find_word(list("......-...-..")), file=sys.stderr)
-# print("Word found: " + morse_dictionary.find_word(list("......-...-..---")), file=sys.stderr)
-# print("Word found: " + morse_dictionary.find_word(list(".-----.-..-..-..")), file=sys.stderr)
-# print("Word found: " + morse_dictionary.find_word(list("---.-----.-..-..-..")), file=sys.stderr)
-# print("Word found: " + morse_dictionary.find_word(list("-....-")), file=sys.stderr)
+# print("Word found: " + "".join(morse_dictionary.find_word(list("......-...-.."))), file=sys.stderr)
+# print("Word found: " + "".join(morse_dictionary.find_word(list("......-...-..---"))), file=sys.stderr)
+# print("Word found: " + "".join(morse_dictionary.find_word(list(".-----.-..-..-.."))), file=sys.stderr)
+# print("Word found: " + "".join(morse_dictionary.find_word(list("---.-----.-..-..-.."))), file=sys.stderr)
+# print("Word found: " + "".join(morse_dictionary.find_word(list("-....-"))), file=sys.stderr)
 #
 # l = "......-...-..---.-----.-..-..-.."
 
-f = open("very_hard_The_Resistance_test_4.txt")
-l = f.readline()
-n = int(f.readline())
-for i in range(n):
-    w = f.readline()
-    morse_dictionary.add(w)
-
-# l = input()
-#
-# n = int(input())
+# f = open("very_hard_The_Resistance_test_4.txt")
+# l = f.readline()
+# n = int(f.readline())
 # for i in range(n):
-#     w = input()
+#     w = f.readline()
 #     morse_dictionary.add(w)
+
+l = input()
+
+n = int(input())
+for i in range(n):
+    w = input()
+    morse_dictionary.add(w)
 
 print("morse_dictionary.count_words(): " + str(morse_dictionary.count_words()), file=sys.stderr)
 print("morse_dictionary.count_elements(): " + str(morse_dictionary.count_elements()), file=sys.stderr)
-#print(morse_dictionary.get_as_string(), file=sys.stderr)
+print(morse_dictionary.get_as_string(), file=sys.stderr)
 
 solutions = deque()
-position_in_dictionary = morse_dictionary
-part_to_use = deque(iterable=list(l))
-words_thus_far = []
-solutions.append(Solution(words_thus_far, position_in_dictionary, part_to_use, []))
+
+solutions.append(Solution(
+    position_in_dictionary=morse_dictionary,
+    part_to_use=deque(iterable=list(l))
+))
 
 results = []
 
+# keep solutions on stack, and do one after another
 while len(solutions) > 0:
 
+    # get one solution
     current_solution = solutions.popleft()
 
+    # if solution still has signs to process and its pointer to dictionary is valid
     while len(current_solution.part_to_use) > 0 and current_solution.position_in_dictionary is not None:
+        # get new sign to process
         current_sign = current_solution.part_to_use.popleft()
+        # add it to the collections holding currently processed set of signs
         current_solution.part_in_use.append(current_sign)
+        # get next element from dictionary based on current sign
         current_solution.position_in_dictionary = current_solution.position_in_dictionary.get_next(current_sign)
 
+        # if new position is valid
         if current_solution.position_in_dictionary is not None:
-            if current_solution.position_in_dictionary.flag_holds_word:
-                word_found = current_solution.position_in_dictionary.word
-                #print("word_found: " + str(word_found), file=sys.stderr)
+            # if there are some words for this position
+            if current_solution.position_in_dictionary.flag_holds_words:
+                # spawn new solution that continue looking for longer words
                 solutions.append(Solution(
+                    current_solution.position_in_dictionary,
                     copy.deepcopy(current_solution.words_thus_far),
-                    copy.deepcopy(current_solution.position_in_dictionary),
                     copy.deepcopy(current_solution.part_to_use),
                     copy.deepcopy(current_solution.part_in_use)
                 ))
-                current_solution.words_thus_far.append(word_found)
+
+                # get all available words
+                words_found = current_solution.position_in_dictionary.words
+
+                # clear currently processed set of signs
                 current_solution.part_in_use.clear()
+                # and set dictionary pointer to first element
                 current_solution.position_in_dictionary = morse_dictionary
+
+                # for all words except last spawn new solutions
+                for word in words_found[:-1]:
+                    new_words_thus_far = copy.deepcopy(current_solution.words_thus_far)
+                    new_words_thus_far.append(word)
+                    solutions.append(Solution(
+                        current_solution.position_in_dictionary,
+                        new_words_thus_far,
+                        copy.deepcopy(current_solution.part_to_use),
+                        copy.deepcopy(current_solution.part_in_use)
+                    ))
+
+                #print("word_found: " + str(word_found), file=sys.stderr)
+                current_solution.words_thus_far.append(words_found[-1])
+
 
     # print("current_solution.part_in_use: " + str(current_solution.part_in_use), file=sys.stderr)
     # print("current_solution.words_thus_far: " + str(current_solution.words_thus_far), file=sys.stderr)
