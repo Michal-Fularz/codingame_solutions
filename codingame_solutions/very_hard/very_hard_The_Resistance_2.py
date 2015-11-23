@@ -5,6 +5,8 @@ import math
 from collections import deque
 import copy
 
+import cProfile
+
 
 class Morse:
     def __init__(self):
@@ -60,101 +62,112 @@ class Solution:
         self.part_in_use = part_in_use
 
 
-morse = Morse()
-words = {}
+class very_hard_The_Resistance_2:
 
-# l = input()
-#
-# n = int(input())
-# for i in range(n):
-#     w = input()
-#     words[morse.convert_word_to_morse(w)] = w
+    def __init__(self):
+        pass
 
-f = open("very_hard_The_Resistance_test_4.txt")
-l = f.readline()
-n = int(f.readline())
-for i in range(n):
-    w = f.readline()
-    words[morse.convert_word_to_morse(w)] = w
+    def run(self):
+        morse = Morse()
+        words = {}
 
-# l = "......-...-..---.-----.-..-..-.."
-# words[morse.convert_word_to_morse("HELL")] = "HELL"
-# words[morse.convert_word_to_morse("HELLO")] = "HELLO"
-# words[morse.convert_word_to_morse("LL")] = "LL"
-# words[morse.convert_word_to_morse("LLO")] = "LLO"
-# words[morse.convert_word_to_morse("OWORLD")] = "OWORLD"
-# words[morse.convert_word_to_morse("WORLD")] = "WORLD"
-# words[morse.convert_word_to_morse("TEST")] = "TEST"
-#
-# print(words, file=sys.stderr)
+        # l = input()
+        #
+        # n = int(input())
+        # for i in range(n):
+        #     w = input()
+        #     words[morse.convert_word_to_morse(w)] = w
 
-solutions = deque()
+        f = open("very_hard_The_Resistance_test_4.txt")
+        l = f.readline()
+        n = int(f.readline())
+        for i in range(n):
+            w = f.readline()
+            words[morse.convert_word_to_morse(w)] = w
 
-solutions.append(Solution(
-    part_to_use=deque(iterable=list(l))
-))
+        # l = "......-...-..---.-----.-..-..-.."
+        # words[morse.convert_word_to_morse("HELL")] = "HELL"
+        # words[morse.convert_word_to_morse("HELLO")] = "HELLO"
+        # words[morse.convert_word_to_morse("LL")] = "LL"
+        # words[morse.convert_word_to_morse("LLO")] = "LLO"
+        # words[morse.convert_word_to_morse("OWORLD")] = "OWORLD"
+        # words[morse.convert_word_to_morse("WORLD")] = "WORLD"
+        # words[morse.convert_word_to_morse("TEST")] = "TEST"
+        #
+        # print(words, file=sys.stderr)
 
-results = []
+        solutions = deque()
 
-# keep solutions on stack, and do one after another
-while len(solutions) > 0:
+        solutions.append(Solution(
+            part_to_use=deque(iterable=list(l))
+        ))
 
-    # get one solution
-    current_solution = solutions.popleft()
+        results = []
 
-    # if solution still has signs to process
-    while len(current_solution.part_to_use) > 0:
-        # get new sign to process
-        current_sign = current_solution.part_to_use.popleft()
-        # add it to the collections holding currently processed set of signs
-        current_solution.part_in_use.append(current_sign)
+        # keep solutions on stack, and do one after another
+        while len(solutions) > 0:
 
-        print("current_solution.part_in_use: " + "".join(current_solution.part_in_use), file=sys.stderr)
-        # if current analysed set of signs is a word in dictionary
-        if "".join(current_solution.part_in_use) in words:
-            # spawn new solution that continue looking for longer words
-            solutions.append(Solution(
-                copy.deepcopy(current_solution.words_thus_far),
-                copy.deepcopy(current_solution.part_to_use),
-                copy.deepcopy(current_solution.part_in_use)
-            ))
+            # get one solution
+            current_solution = solutions.popleft()
 
-            # get all available words
-            words_found = words["".join(current_solution.part_in_use)]
+            # if solution still has signs to process
+            while len(current_solution.part_to_use) > 0:
+                # get new sign to process
+                current_sign = current_solution.part_to_use.popleft()
+                # add it to the collections holding currently processed set of signs
+                current_solution.part_in_use.append(current_sign)
 
-            print("words_found: " + str(words_found), file=sys.stderr)
+                #print("current_solution.part_in_use: " + "".join(current_solution.part_in_use), file=sys.stderr)
+                # if current analysed set of signs is a word in dictionary
+                if "".join(current_solution.part_in_use) in words:
+                    # spawn new solution that continue looking for longer words
+                    solutions.append(Solution(
+                        copy.deepcopy(current_solution.words_thus_far),
+                        copy.deepcopy(current_solution.part_to_use),
+                        copy.deepcopy(current_solution.part_in_use)
+                    ))
 
-            # clear currently processed set of signs
-            current_solution.part_in_use.clear()
+                    # get all available words
+                    words_found = words["".join(current_solution.part_in_use)]
 
-            # for all words except last spawn new solutions
-            # for word in words_found[:-1]:
-            #     new_words_thus_far = copy.deepcopy(current_solution.words_thus_far)
-            #     new_words_thus_far.append(word)
-            #     solutions.append(Solution(
-            #         current_solution.position_in_dictionary,
-            #         new_words_thus_far,
-            #         copy.deepcopy(current_solution.part_to_use),
-            #         copy.deepcopy(current_solution.part_in_use)
-            #     ))
-            #
-            # current_solution.words_thus_far.append(words_found[-1])
-            current_solution.words_thus_far.append(words_found)
+                    print("words_found: " + str(words_found), file=sys.stderr)
+
+                    # clear currently processed set of signs
+                    current_solution.part_in_use.clear()
+
+                    # for all words except last spawn new solutions
+                    # for word in words_found[:-1]:
+                    #     new_words_thus_far = copy.deepcopy(current_solution.words_thus_far)
+                    #     new_words_thus_far.append(word)
+                    #     solutions.append(Solution(
+                    #         current_solution.position_in_dictionary,
+                    #         new_words_thus_far,
+                    #         copy.deepcopy(current_solution.part_to_use),
+                    #         copy.deepcopy(current_solution.part_in_use)
+                    #     ))
+                    #
+                    # current_solution.words_thus_far.append(words_found[-1])
+                    current_solution.words_thus_far.append(words_found)
 
 
-    # print("current_solution.part_in_use: " + str(current_solution.part_in_use), file=sys.stderr)
-    # print("current_solution.words_thus_far: " + str(current_solution.words_thus_far), file=sys.stderr)
-    if len(current_solution.part_in_use) == 0:
-        results.append(current_solution.words_thus_far)
+            # print("current_solution.part_in_use: " + str(current_solution.part_in_use), file=sys.stderr)
+            # print("current_solution.words_thus_far: " + str(current_solution.words_thus_far), file=sys.stderr)
+            if len(current_solution.part_in_use) == 0:
+                results.append(current_solution.words_thus_far)
 
-r = ""
-for result in results:
-    r += str(result) + "\n"
+        r = ""
+        for result in results:
+            r += str(result) + "\n"
 
-print("result: " + r, file=sys.stderr)
+        print("result: " + r, file=sys.stderr)
 
-# Write an action using print
-# To debug: print("Debug messages...", file=sys.stderr)
+        # Write an action using print
+        # To debug: print("Debug messages...", file=sys.stderr)
 
-print(len(results))
+        print(len(results))
+
+
+if __name__ == "__main__":
+    app = very_hard_The_Resistance_2()
+    cProfile.run('app.run()')
 
