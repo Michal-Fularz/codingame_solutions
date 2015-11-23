@@ -56,7 +56,7 @@ class Morse:
 
 
 class Solution:
-    def __init__(self, words_thus_far=[], part_to_use=deque(), part_in_use=deque()):
+    def __init__(self, words_thus_far=[], part_to_use=deque(), part_in_use=""):
         self.words_thus_far = words_thus_far
         self.part_to_use = part_to_use
         self.part_in_use = part_in_use
@@ -115,11 +115,11 @@ class very_hard_The_Resistance_2:
                 # get new sign to process
                 current_sign = current_solution.part_to_use.popleft()
                 # add it to the collections holding currently processed set of signs
-                current_solution.part_in_use.append(current_sign)
+                current_solution.part_in_use += str(current_sign)
 
                 #print("current_solution.part_in_use: " + "".join(current_solution.part_in_use), file=sys.stderr)
                 # if current analysed set of signs is a word in dictionary
-                if "".join(current_solution.part_in_use) in words:
+                if current_solution.part_in_use in words:
                     # spawn new solution that continue looking for longer words
                     solutions.append(Solution(
                         copy.deepcopy(current_solution.words_thus_far),
@@ -128,12 +128,12 @@ class very_hard_The_Resistance_2:
                     ))
 
                     # get all available words
-                    words_found = words["".join(current_solution.part_in_use)]
+                    words_found = words[current_solution.part_in_use]
 
                     print("words_found: " + str(words_found), file=sys.stderr)
 
                     # clear currently processed set of signs
-                    current_solution.part_in_use.clear()
+                    current_solution.part_in_use = ""
 
                     # for all words except last spawn new solutions
                     # for word in words_found[:-1]:
