@@ -1,5 +1,7 @@
 __author__ = 'Amin'
 
+import sys
+
 
 class Morse:
     def __init__(self):
@@ -50,62 +52,81 @@ class Morse:
 
 def load_from_file(filename):
     morse = Morse()
-    words_in_morse = {}
+    words = []
+    words_in_morse = []
 
     f = open(filename)
     l = f.readline()
     n = int(f.readline())
-    #keys_length = []
+    keys_length = []
     for i in range(n):
         w = f.readline()
-        words_in_morse[morse.convert_word_to_morse(w)] = w
+        words.append(w)
+        words_in_morse.append(morse.convert_word_to_morse(w))
+        #words_in_morse[morse.convert_word_to_morse(w)] = w
         #key = self.morse.convert_word_to_morse(w)
-        #keys_length.append(len(key))
+        keys_length.append(len(morse.convert_word_to_morse(w)))
         #self.words[len(key)][key] = w
         #self.keys.add(key)
 
-    #keys_length.sort()
+    keys_length.sort()
     #print(keys_length, file=sys.stderr)
-    #print(max(keys_length), file=sys.stderr)
+    print(max(keys_length), file=sys.stderr)
 
-    return l, words_in_morse
+    return l, words, words_in_morse
 
 
 def load_from_input():
     morse = Morse()
-    words_in_morse = {}
+    words = []
+    words_in_morse = []
     l = input()
 
     n = int(input())
     for i in range(n):
         w = input()
-        words_in_morse[morse.convert_word_to_morse(w)] = w
+        words.append(w)
+        words_in_morse.append(morse.convert_word_to_morse(w))
+        #words_in_morse[morse.convert_word_to_morse(w)] = w
 
-    return l, words_in_morse
+    return l, words, words_in_morse
 
 
 def load_from_prepared_data():
     morse = Morse()
-    words_in_morse = {}
+    words = []
+    words_in_morse = []
     l = "......-...-..---.-----.-..-..-.."
 
+    w = "EEEEE"
+    words.append(w)
+    words_in_morse.append(morse.convert_word_to_morse(w))
+    #words_in_morse[morse.convert_word_to_morse(w)] = w
     w = "HE"
-    words_in_morse[morse.convert_word_to_morse(w)] = w
+    words.append(w)
+    words_in_morse.append(morse.convert_word_to_morse(w))
     w = "HELL"
     #word_in_morse = self.morse.convert_word_to_morse(word)
     #self.words[len(word_in_morse)][word_in_morse] = word
-    words_in_morse[morse.convert_word_to_morse(w)] = w
+    words.append(w)
+    words_in_morse.append(morse.convert_word_to_morse(w))
     w = "HELLO"
-    words_in_morse[morse.convert_word_to_morse(w)] = w
+    words.append(w)
+    words_in_morse.append(morse.convert_word_to_morse(w))
     w = "LL"
-    words_in_morse[morse.convert_word_to_morse(w)] = w
+    words.append(w)
+    words_in_morse.append(morse.convert_word_to_morse(w))
     w = "LLO"
-    words_in_morse[morse.convert_word_to_morse(w)] = w
+    words.append(w)
+    words_in_morse.append(morse.convert_word_to_morse(w))
     w = "OWORLD"
-    words_in_morse[morse.convert_word_to_morse(w)] = w
+    words.append(w)
+    words_in_morse.append(morse.convert_word_to_morse(w))
     w = "WORLD"
-    words_in_morse[morse.convert_word_to_morse(w)] = w
+    words.append(w)
+    words_in_morse.append(morse.convert_word_to_morse(w))
     w = "TEST"
-    words_in_morse[morse.convert_word_to_morse(w)] = w
+    words.append(w)
+    words_in_morse.append(morse.convert_word_to_morse(w))
 
-    return l, words_in_morse
+    return l, words, words_in_morse

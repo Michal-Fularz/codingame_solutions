@@ -42,9 +42,9 @@ class MorseDictionaryElement:
         else:
             return self.get_next(sign)
 
-    def __fill_with_word(self, word_in_morse):
+    def __fill_with_word(self, word):
         self.flag_holds_words = True
-        self.words.append(word_in_morse)
+        self.words.append(word)
 
     def add(self, word_in_morse, word):
         current_element = self
@@ -69,7 +69,7 @@ class MorseDictionaryElement:
 
     def count_words(self):
         if self.flag_holds_words:
-            count = 1
+            count = len(self.words)
         else:
             count = 0
 
@@ -83,7 +83,7 @@ class MorseDictionaryElement:
         s += str(self.level) + ": " + self.sign + ", "
         #s_until_now = s
         if self.flag_holds_words:
-            s += "".join(self.words) + "\n"
+            s += ", ".join(self.words) + "\n"
         #elif self.sign == "x":
         elif self.sign != "." and self.sign != "-":
             s += "\n"
@@ -157,7 +157,7 @@ def process_solutions(solutions, message, morse_dictionary):
                     # spawn new solution that continue looking for longer words
                     solutions.append(Solution(
                         current_solution.position_in_dictionary,
-                        [],#copy.deepcopy(current_solution.words_thus_far),
+                        copy.deepcopy(current_solution.words_thus_far),
                         current_solution.number_of_words_thus_far,
                         current_solution.part_to_use_start_index,
                         current_solution.part_in_use_end_index
@@ -180,59 +180,55 @@ def process_solutions(solutions, message, morse_dictionary):
                         new_words_thus_far.append(word)
                         solutions.append(Solution(
                             current_solution.position_in_dictionary,
-                            [],#new_words_thus_far,
+                            new_words_thus_far,
                             current_solution.number_of_words_thus_far,
                             current_solution.part_to_use_start_index,
                             current_solution.part_in_use_end_index
                         ))
 
-                    #current_solution.words_thus_far.append(words_found[-1])
+                    current_solution.words_thus_far.append(words_found[-1])
             else:
                 flag_no_more_elements = True
 
-
-        # print("current_solution.part_in_use: " + str(current_solution.part_in_use), file=sys.stderr)
-        # print("current_solution.words_thus_far: " + str(current_solution.words_thus_far), file=sys.stderr)
-        if current_solution is not None: #and current_solution.part_in_use_end_index) == 0:
+        if current_solution is not None and current_solution.part_in_use_end_index - current_solution.part_to_use_start_index == 1:
             results.append(current_solution.words_thus_far)
 
     return results
 
 
 def process_and_print_results(results):
-    # r = ""
-    # for result in results:
-    #     r += str(result) + "\n"
+    r = ""
+    for result in results:
+        r += str(result) + "\n"
 
-    #print("result: " + r, file=sys.stderr)
+    print("result: " + r, file=sys.stderr)
 
     # Write an action using print
     # To debug: print("Debug messages...", file=sys.stderr)
 
-    #print(max([len(words) for words in result]))
     print(len(results))
 
 
 def print_morse_dict_info(morse_dictionary):
-    # print(morse_dictionary.get_as_string(), file=sys.stderr)
+    print(morse_dictionary.get_as_string(), file=sys.stderr)
     print("morse_dictionary.count_words(): " + str(morse_dictionary.count_words()), file=sys.stderr)
     print("morse_dictionary.count_elements(): " + str(morse_dictionary.count_elements()), file=sys.stderr)
 
 
-def generate_morse_dictionary(words_in_morse):
+def generate_morse_dictionary(words, words_in_morse):
     morse_dictionary = MorseDictionaryElement(number=0)
 
-    for key, item in words_in_morse.items():
-        morse_dictionary.add(key, item)
+    for word, word_in_morse in zip(words, words_in_morse):
+        morse_dictionary.add(word_in_morse, word)
 
     return morse_dictionary
 
 
 def main():
-    #message, words_in_morse = load_from_prepared_data()
-    message, words_in_morse = load_from_file("very_hard_The_Resistance_test_4.txt")
+    message, words, words_in_morse = load_from_prepared_data()
+    #message, words, words_in_morse = load_from_file("very_hard_The_Resistance_test_4.txt")
 
-    morse_dictionary = generate_morse_dictionary(words_in_morse)
+    morse_dictionary = generate_morse_dictionary(words, words_in_morse)
 
     print_morse_dict_info(morse_dictionary)
 
