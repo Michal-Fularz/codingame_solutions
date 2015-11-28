@@ -6,56 +6,11 @@ from collections import deque
 import copy
 # TODO: ordered dict require manual sorting after all the items were inserted
 # TODO: I am not sure if this will speed the is in part
-from collections import OrderedDict
+#from collections import OrderedDict
 
 import cProfile
 
-
-class Morse:
-    def __init__(self):
-        self.morse_alphabet = []
-
-        self.morse_alphabet.append((".", "E"))
-
-        self.morse_alphabet.append(("..", "I"))
-        self.morse_alphabet.append((".-", "A"))
-
-        self.morse_alphabet.append(("...", "S"))
-        self.morse_alphabet.append(("..-", "U"))
-        self.morse_alphabet.append((".-.", "R"))
-        self.morse_alphabet.append((".--", "W"))
-
-        self.morse_alphabet.append(("....", "H"))
-        self.morse_alphabet.append(("...-", "V"))
-        self.morse_alphabet.append(("..-.", "F"))
-        self.morse_alphabet.append((".-..", "L"))
-        self.morse_alphabet.append((".--.", "P"))
-        self.morse_alphabet.append((".---", "J"))
-
-        self.morse_alphabet.append(("-", "T"))
-
-        self.morse_alphabet.append(("-.", "N"))
-        self.morse_alphabet.append(("--", "M"))
-
-        self.morse_alphabet.append(("-..", "D"))
-        self.morse_alphabet.append(("-.-", "K"))
-        self.morse_alphabet.append(("--.", "G"))
-        self.morse_alphabet.append(("---", "O"))
-
-        self.morse_alphabet.append(("-...", "B"))
-        self.morse_alphabet.append(("-..-", "X"))
-        self.morse_alphabet.append(("-.-.", "C"))
-        self.morse_alphabet.append(("-.--", "Y"))
-        self.morse_alphabet.append(("--..", "Z"))
-        self.morse_alphabet.append(("--.-", "Q"))
-
-    def convert_word_to_morse(self, word):
-        word_in_morse = ""
-        for letter in word:
-            sign_representation_of_letter = [x[0] for x in self.morse_alphabet if x[1] == letter]
-            word_in_morse += "".join(sign_representation_of_letter)
-
-        return word_in_morse
+from codingame_solutions.very_hard.very_hard_The_Resistance_utils import Morse
 
 
 class Solution:
@@ -71,56 +26,13 @@ class very_hard_The_Resistance_2:
     def __init__(self):
         self.morse = Morse()
         self.words = []
-        self.keys = set()#[]
+        #self.keys = set()#[]
         for i in range(0, 50):
-            self.words.append(OrderedDict())
+            self.words.append({})
             #self.keys.append(set())
         self.l = ""
 
-
         print([len(x) for x in self.words], file=sys.stderr)
-
-    def load_from_file(self):
-        f = open("very_hard_The_Resistance_test_4.txt")
-        self.l = f.readline()
-        n = int(f.readline())
-
-        keys_length = []
-
-        for i in range(n):
-            w = f.readline()
-            key = self.morse.convert_word_to_morse(w)
-            keys_length.append(len(key))
-            self.words[len(key)][key] = w
-            self.keys.add(key)
-
-        #keys_length.sort()
-        #print(keys_length, file=sys.stderr)
-        #print(max(keys_length), file=sys.stderr)
-
-    def use_prepared_set(self):
-        self.l = "......-...-..---.-----.-..-..-.."
-        word = "HELL"
-        word_in_morse = self.morse.convert_word_to_morse(word)
-        self.words[len(word_in_morse)][word_in_morse] = word
-        word = "HELLO"
-        word_in_morse = self.morse.convert_word_to_morse(word)
-        self.words[len(word_in_morse)][word_in_morse] = word
-        word = "LL"
-        word_in_morse = self.morse.convert_word_to_morse(word)
-        self.words[len(word_in_morse)][word_in_morse] = word
-        word = "LLO"
-        word_in_morse = self.morse.convert_word_to_morse(word)
-        self.words[len(word_in_morse)][word_in_morse] = word
-        word = "OWORLD"
-        word_in_morse = self.morse.convert_word_to_morse(word)
-        self.words[len(word_in_morse)][word_in_morse] = word
-        word = "WORLD"
-        word_in_morse = self.morse.convert_word_to_morse(word)
-        self.words[len(word_in_morse)][word_in_morse] = word
-        word = "TEST"
-        word_in_morse = self.morse.convert_word_to_morse(word)
-        self.words[len(word_in_morse)][word_in_morse] = word
 
     def spawn_new_solution(self, solutions, part_to_use_start_index, part_in_use_end_index):
         solutions.append(Solution(
@@ -142,7 +54,7 @@ class very_hard_The_Resistance_2:
         else:
             return False
 
-    def is_currently_anaylzed_part_in_dictionary(self, current_dict_key):
+    def is_currently_anaylzed_part_in_dictionary2(self, current_dict_key):
 
         #if len(self.words[len(current_dict_key)]) > 0:
             #if current_dict_key in self.words[len(current_dict_key)]:
@@ -153,7 +65,7 @@ class very_hard_The_Resistance_2:
         #else:
             #return False
 
-    def is_currently_anaylzed_part_in_dictionary3(self, current_dict_key):
+    def is_currently_anaylzed_part_in_dictionary(self, current_dict_key):
 
         if len(self.words[len(current_dict_key)]) > 0:
             try:
@@ -163,8 +75,6 @@ class very_hard_The_Resistance_2:
                 return False
         else:
             return False
-
-
 
     def check_one_solution(self, current_solution, solutions):
 
@@ -193,9 +103,9 @@ class very_hard_The_Resistance_2:
                 self.spawn_new_solution(solutions, current_solution.part_to_use_start_index, current_solution.part_in_use_end_index)
 
                 # get all available words
-                #words_found = self.words[len(current_dict_key)][current_dict_key]
+                words_found = self.words[len(current_dict_key)][current_dict_key]
 
-                #print("words_found: " + str(words_found), file=sys.stderr)
+                print("words_found: " + str(words_found), file=sys.stderr)
 
                 # clear currently processed set of signs
                 current_solution.part_to_use_start_index = current_solution.part_in_use_end_index
@@ -213,7 +123,7 @@ class very_hard_The_Resistance_2:
                 #     ))
                 #
                 # current_solution.words_thus_far.append(words_found[-1])
-                #current_solution.words_thus_far.append(words_found)
+                current_solution.words_thus_far.append(words_found)
                 current_solution.number_of_words += 1
 
     def find_results(self, solutions):
@@ -236,13 +146,6 @@ class very_hard_The_Resistance_2:
         return results
 
     def run(self):
-
-        # l = input()
-        #
-        # n = int(input())
-        # for i in range(n):
-        #     w = input()
-        #     words[morse.convert_word_to_morse(w)] = w
 
         solutions = deque()
 
@@ -267,9 +170,9 @@ class very_hard_The_Resistance_2:
 
 def foo():
     app = very_hard_The_Resistance_2()
-    app.load_from_file()
-    #app.use_prepared_set()
-    #print(app.words, file=sys.stderr)
+    #app.load_from_file()
+    app.use_prepared_set()
+    print(app.words, file=sys.stderr)
     app.run()
 
 if __name__ == "__main__":
