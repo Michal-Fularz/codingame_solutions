@@ -108,6 +108,40 @@ class MorseDictionaryElement:
 
         return current_element.words
 
+    def test_where_the_word_follows(self, word_in_morse):
+
+        flag_end_of_tree = False
+
+        current_element = self
+
+        position = []
+        number_of_words = []
+
+        for i, sign in enumerate(word_in_morse):
+
+            if current_element.flag_holds_words:
+                # there are some words here, remember this!
+                position.append(i)
+                number_of_words.append(len(current_element.words))
+
+            if not current_element.contains(sign):
+                # this the end of tree, stop the loop
+                flag_end_of_tree = True
+                break
+            else:
+                current_element = current_element.get_next(sign)
+
+        if not flag_end_of_tree:
+            if current_element.flag_holds_words:
+                # there are some words here, remember this!
+                position.append(len(word_in_morse))
+                number_of_words.append(len(current_element.words))
+
+
+        return position, number_of_words
+
+
+
 
 class Message:
     def __init__(self, value):
@@ -225,8 +259,8 @@ def generate_morse_dictionary(words, words_in_morse):
 
 
 def main():
-    message, words, words_in_morse = load_from_prepared_data()
-    #message, words, words_in_morse = load_from_file("very_hard_The_Resistance_test_4.txt")
+    #message, words, words_in_morse = load_from_prepared_data()
+    message, words, words_in_morse = load_from_file("very_hard_The_Resistance_test_4.txt")
 
     morse_dictionary = generate_morse_dictionary(words, words_in_morse)
 
@@ -238,19 +272,45 @@ def main():
     # print("Words found: " + "".join(morse_dictionary.find_words(list("---.-----.-..-..-.."))), file=sys.stderr)
     # print("Words found: " + "".join(morse_dictionary.find_words(list("-....-"))), file=sys.stderr)
 
-    solutions = deque()
+    solutions = [0] * (len(message)+1)
+    solutions[0] = 1
 
-    solutions.append(Solution(
-        position_in_dictionary=morse_dictionary,
-        words_thus_far=[],
-        part_to_use_start_index=0,
-        part_in_use_end_index=0
-    ))
+    for i, sol in enumerate(solutions):
 
-    results = process_solutions(solutions, message, morse_dictionary)
+        #print(i, file=sys.stderr)
+        #print(solutions, file=sys.stderr)
 
-    process_and_print_results(results)
+        if sol != 0:
+            # check the part of message starting from index i where it gets you
+            #print(message[i:], file=sys.stderr)
+            positions, numbers_of_words = morse_dictionary.test_where_the_word_follows(message[i:])
+            #print(positions, file=sys.stderr)
+            #print(numbers_of_words, file=sys.stderr)
+
+            #print("Words:", file=sys.stderr)
+            for position, number in zip(positions, numbers_of_words):
+                word = morse_dictionary.find_words(message[i:(i+position)])
+                #print(word, file=sys.stderr)
+                solutions[i+position] += sol * number
+
+    print(solutions[-1])
+
+    # old part
+
+    # solutions = deque()
+    #
+    # solutions.append(Solution(
+    #     position_in_dictionary=morse_dictionary,
+    #     words_thus_far=[],
+    #     part_to_use_start_index=0,
+    #     part_in_use_end_index=0
+    # ))
+    #
+    # results = process_solutions(solutions, message, morse_dictionary)
+    #
+    # process_and_print_results(results)
 
 
 if __name__ == '__main__':
-    cProfile.run('main()')
+    #cProfile.run('main()')
+    main()
