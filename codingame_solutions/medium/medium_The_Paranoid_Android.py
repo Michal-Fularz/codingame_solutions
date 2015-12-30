@@ -53,39 +53,41 @@ class Drive:
         # nb_total_clones: number of generated clones
         # nb_additional_elevators: ignore (always zero)
         # nb_elevators: number of elevators
-        nb_floors, width, nb_rounds, exit_floor, exit_pos, nb_total_clones, nb_additional_elevators, nb_elevators = [int(i) for i in raw_input().split()]
+        nb_floors, width, nb_rounds, exit_floor, exit_pos, nb_total_clones, nb_additional_elevators, nb_elevators = [int(i) for i in input().split()]
 
-        for i in xrange(nb_floors):
+        for i in range(nb_floors):
             self.floors.append(Floor(width))
 
         self.floors[exit_floor].add_exit(exit_pos)
 
-        for i in xrange(nb_elevators):
+        for i in range(nb_elevators):
             # elevator_floor: floor on which this elevator is found
             # elevator_pos: position of the elevator on its floor
-            elevator_floor, elevator_pos = [int(j) for j in raw_input().split()]
+            elevator_floor, elevator_pos = [int(j) for j in input().split()]
             self.floors[elevator_floor].add_elevator(elevator_pos)
 
 
-# MAIN
+if __name__ == '__main__':
+    drive = Drive()
 
-drive = Drive()
+    flag_do_the_blocking = False
 
-flag_do_the_blocking = False
+    # game loop
+    while 1:
+        # clone_floor: floor of the leading clone
+        # clone_pos: position of the leading clone on its floor
+        # direction: direction of the leading clone: LEFT or RIGHT
+        clone_floor, clone_pos, direction = input().split()
+        clone_floor = int(clone_floor)
+        clone_pos = int(clone_pos)
 
-# game loop
-while 1:
-    # clone_floor: floor of the leading clone
-    # clone_pos: position of the leading clone on its floor
-    # direction: direction of the leading clone: LEFT or RIGHT
-    clone_floor, clone_pos, direction = raw_input().split()
-    clone_floor = int(clone_floor)
-    clone_pos = int(clone_pos)
+        flag_do_the_blocking = drive.floors[clone_floor].should_be_blocked(clone_pos, direction)
 
-    flag_do_the_blocking = drive.floors[clone_floor].should_be_blocked(clone_pos, direction)
+        # Write an action using print
+        # To debug: print("Debug messages...", file=sys.stderr)
 
-    # action: WAIT or BLOCK
-    if flag_do_the_blocking:
-        print "BLOCK"
-    else:
-        print "WAIT"
+        # action: WAIT or BLOCK
+        if flag_do_the_blocking:
+            print("BLOCK")
+        else:
+            print("WAIT")

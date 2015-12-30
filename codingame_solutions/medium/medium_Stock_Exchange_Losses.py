@@ -1,15 +1,15 @@
 __author__ = 'Amin'
 
+# COMPLETED
+# PYTHON 3.x
+
 import sys
 import math
 
-# Auto-generated code below aims at helping you parse
-# the standard input according to the problem statement.
+n = int(input())
+vs = input()
 
-n = int(raw_input())
-vs = raw_input()
-
-stock_values = []#[5, 3, 4, 2, 3, 1]
+stock_values = []
 
 for value in vs.split(" "):
     stock_values.append(int(value))
@@ -44,8 +44,8 @@ if difference < global_difference:
     global_difference = difference
 
 # Write an action using print
-# To debug: print >> sys.stderr, "Debug messages..."
+# To debug: print("Debug messages...", file=sys.stderr)
 
-print >> sys.stderr, stock_values
+print(stock_values, file=sys.stderr)
 
-print global_difference
+print(global_difference)
