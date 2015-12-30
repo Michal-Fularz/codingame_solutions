@@ -110,20 +110,21 @@ class MorseDictionaryElement:
         for i, sign in enumerate(word_in_morse):
 
             if current_element.flag_holds_words:
-                # there are some words here, remember this!
+                # there are some words here, remember them and current index!
                 positions.append(i)
                 numbers_of_words.append(len(current_element.words))
 
             if not current_element.contains(sign):
-                # this the end of tree, stop the loop
+                # this is the end of the tree, stop the loop and mark that there is nothing more to check
                 flag_end_of_tree = True
                 break
             else:
                 current_element = current_element.get_next(sign)
 
+        # if we analyse all the signs in the word, but we do not finish traversing the tree check current element
         if not flag_end_of_tree:
             if current_element.flag_holds_words:
-                # there are some words here, remember this!
+                # there are some words here, remember them and current index!
                 positions.append(len(word_in_morse))
                 numbers_of_words.append(len(current_element.words))
 
