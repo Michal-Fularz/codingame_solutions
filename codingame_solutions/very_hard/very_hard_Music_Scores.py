@@ -1,5 +1,8 @@
 __author__ = 'Amin'
 
+# COMPLETED
+# PYTHON 3.x
+
 import sys
 import math
 import numpy as np
@@ -31,8 +34,8 @@ class Image:
         self.notes_positions = []
         self.notes = ["C", "D", "E", "F", "G", "A", "B", "C", "D", "E", "F", "G"]
 
-    def read_from_input(self, f, flag_test):
-        if flag_test:
+    def read(self, f=None, flag_use_file=False):
+        if flag_use_file:
             encoded_data = f.readline().split()
         else:
             encoded_data = input().split()
@@ -357,55 +360,56 @@ class Image:
 
         return note
 
-flag_test = True
+if __name__ == '__main__':
+    flag_use_file = True
 
-f = None
-if flag_test:
-    f = open("very_hard_Music_Scores_test_11.txt", "r")
-    w, h = [int(i) for i in f.readline().split()]
-else:
-    w, h = [int(i) for i in input().split()]
-
-print("Image width: " + str(w) + ", height: " + str(h), file=sys.stderr)
-image = Image(w, h)
-image.read_from_input(f, flag_test)
-image.find_parameters()
-image.remove_lines()
-
-pixels_with_one_neighbour = image.find_pixels_with_one_neighbour()
-
-if len(pixels_with_one_neighbour) > 0:
-    long_part_width = 1
-    print(pixels_with_one_neighbour, file=sys.stderr)
-    for pixel in pixels_with_one_neighbour:
-        image.remove_long_part(pixel[0], pixel[1], width=long_part_width)
-
-else:
-    long_part_beginnings, long_part_width = image.find_pairs_of_pixels_with_three_neighbours()
-    print(long_part_beginnings, file=sys.stderr)
-    print("Long part width: " + str(long_part_width), file=sys.stderr)
-    for pixel in long_part_beginnings:
-        image.remove_long_part(pixel[0], pixel[1], width=long_part_width)
-
-result = ""
-
-flag_search = True
-x = 0
-y = 0
-while flag_search:
-    x, y = image.find_first_pixel_from_top_left_by_column(x, 0)
-    if x != -1 and y != -1:
-        center_x, center_y, number_of_elements = image.calculate_center_of_mass(x, y)
-        note = image.decide_which_note(center_x, center_y, number_of_elements, long_part_width)
-        print("note: " + str(note), file=sys.stderr)
-        result += note + " "
+    f = None
+    if flag_use_file:
+        f = open("very_hard_Music_Scores/very_hard_Music_Scores_test_11.txt", "r")
+        w, h = [int(i) for i in f.readline().split()]
     else:
-        flag_search = False
+        w, h = [int(i) for i in input().split()]
+
+    print("Image width: " + str(w) + ", height: " + str(h), file=sys.stderr)
+    image = Image(w, h)
+    image.read(f, flag_use_file)
+    image.find_parameters()
+    image.remove_lines()
+
+    pixels_with_one_neighbour = image.find_pixels_with_one_neighbour()
+
+    if len(pixels_with_one_neighbour) > 0:
+        long_part_width = 1
+        print(pixels_with_one_neighbour, file=sys.stderr)
+        for pixel in pixels_with_one_neighbour:
+            image.remove_long_part(pixel[0], pixel[1], width=long_part_width)
+
+    else:
+        long_part_beginnings, long_part_width = image.find_pairs_of_pixels_with_three_neighbours()
+        print(long_part_beginnings, file=sys.stderr)
+        print("Long part width: " + str(long_part_width), file=sys.stderr)
+        for pixel in long_part_beginnings:
+            image.remove_long_part(pixel[0], pixel[1], width=long_part_width)
+
+    result = ""
+
+    flag_search = True
+    x = 0
+    y = 0
+    while flag_search:
+        x, y = image.find_first_pixel_from_top_left_by_column(x, 0)
+        if x != -1 and y != -1:
+            center_x, center_y, number_of_elements = image.calculate_center_of_mass(x, y)
+            note = image.decide_which_note(center_x, center_y, number_of_elements, long_part_width)
+            print("note: " + str(note), file=sys.stderr)
+            result += note + " "
+        else:
+            flag_search = False
 
 
-image.print_debug(image.data)
+    image.print_debug(image.data)
 
-# Write an action using print
-# To debug: print("Debug messages...", file=sys.stderr)
+    # Write an action using print
+    # To debug: print("Debug messages...", file=sys.stderr)
 
-print(result[:-1])
+    print(result[:-1])

@@ -147,7 +147,7 @@ def generate_morse_dictionary(words, words_in_morse):
 
 if __name__ == '__main__':
     #message, words, words_in_morse = load_from_prepared_data()
-    message, words, words_in_morse = load_from_file("very_hard_The_Resistance_test_4.txt")
+    message, words, words_in_morse = load_from_file("very_hard_The_Resistance/very_hard_The_Resistance_test_4.txt")
 
     morse_dictionary = generate_morse_dictionary(words, words_in_morse)
     print_morse_dict_info(morse_dictionary)
