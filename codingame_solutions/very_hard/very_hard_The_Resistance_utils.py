@@ -50,6 +50,12 @@ class Morse:
         return word_in_morse
 
 
+def find_longest_word(words):
+    longest_word_length = max([len(word) for word in words])
+
+    print("Longest word consist of: " + str(longest_word_length) + " signs", file=sys.stderr)
+
+
 def load_from_file(filename):
     morse = Morse()
     words = []
@@ -58,20 +64,12 @@ def load_from_file(filename):
     f = open(filename)
     l = f.readline().replace("\n", "")
     n = int(f.readline())
-    keys_length = []
     for i in range(n):
         w = f.readline().replace("\n", "")
         words.append(w)
         words_in_morse.append(morse.convert_word_to_morse(w))
-        #words_in_morse[morse.convert_word_to_morse(w)] = w
-        #key = self.morse.convert_word_to_morse(w)
-        keys_length.append(len(morse.convert_word_to_morse(w)))
-        #self.words[len(key)][key] = w
-        #self.keys.add(key)
 
-    keys_length.sort()
-    #print(keys_length, file=sys.stderr)
-    print(max(keys_length), file=sys.stderr)
+    find_longest_word(words_in_morse)
 
     return l, words, words_in_morse
 
@@ -87,7 +85,8 @@ def load_from_input():
         w = input()
         words.append(w)
         words_in_morse.append(morse.convert_word_to_morse(w))
-        #words_in_morse[morse.convert_word_to_morse(w)] = w
+
+    find_longest_word(words_in_morse)
 
     return l, words, words_in_morse
 
@@ -101,13 +100,10 @@ def load_from_prepared_data():
     w = "EEEEE"
     words.append(w)
     words_in_morse.append(morse.convert_word_to_morse(w))
-    #words_in_morse[morse.convert_word_to_morse(w)] = w
     w = "HE"
     words.append(w)
     words_in_morse.append(morse.convert_word_to_morse(w))
     w = "HELL"
-    #word_in_morse = self.morse.convert_word_to_morse(word)
-    #self.words[len(word_in_morse)][word_in_morse] = word
     words.append(w)
     words_in_morse.append(morse.convert_word_to_morse(w))
     w = "HELLO"
@@ -119,12 +115,6 @@ def load_from_prepared_data():
     w = "LLO"
     words.append(w)
     words_in_morse.append(morse.convert_word_to_morse(w))
-    # w = "O"
-    # words.append(w)
-    # words_in_morse.append(morse.convert_word_to_morse(w))
-    # w = "WOR"
-    # words.append(w)
-    # words_in_morse.append(morse.convert_word_to_morse(w))
     w = "OWORLD"
     words.append(w)
     words_in_morse.append(morse.convert_word_to_morse(w))
@@ -134,5 +124,7 @@ def load_from_prepared_data():
     w = "TEST"
     words.append(w)
     words_in_morse.append(morse.convert_word_to_morse(w))
+
+    find_longest_word(words_in_morse)
 
     return l, words, words_in_morse
