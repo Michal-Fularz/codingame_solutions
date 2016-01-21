@@ -150,6 +150,36 @@ def hex_string_to_int_value():
     print(r)
 
 
+# you get n words separated by new line characters
+# print them in following order:
+# line 0
+# line 2
+# line 4
+# line 1
+# line 3
+# line 5
+# line 6
+def mixed_lines():
+    n = int(input())
+
+    lines = []
+    for i in range(0, n):
+        lines.append(input())
+
+    r = ""
+    r += lines[0] + "\n"
+
+    for i in range(2, len(lines), 2):
+        r += lines[i]
+
+    for i in range(1, len(lines), 2):
+        r += lines[i]
+
+    r += lines[-1]
+
+    print(r)
+
+
 if __name__ == "__main__":
 
     upper_letter()
@@ -161,4 +191,6 @@ if __name__ == "__main__":
     print_as_binary()
 
     hex_string_to_int_value()
+
+    mixed_lines()
 

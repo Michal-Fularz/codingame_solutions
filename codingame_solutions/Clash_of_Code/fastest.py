@@ -115,9 +115,49 @@ def sort_numbers():
     print(r[:-1])
 
 
+# The program:
+# Your program must output the N first numbers of the Fibonacci sequence.
+# Each number of the Fibonacci sequence is calculated by adding up the two numbers that precede it in the sequence, except from the two first numbers, which are 0 and 1.
+# Therefore, the third number is 1 (0 + 1 = 1), the fourth one 2 (1 + 1 = 2), the fifth one 3 (1 + 2 = 3), the sixth one 5 (2 + 3 = 5), and so on.
+# The begin of the Fibonacci sequence is: 0, 1, 1, 2, 3, 5, 8, 13, 21, ...
+
+def _f(n):
+    if n == 0:
+        return 0
+    elif n == 1:
+        return 1
+    else:
+        return _f(n-1) + _f(n-2)
+
+
+def _fi(n):
+    a_n_2, a_n_1 = 0, 1
+    for i in range(0, n):
+        a_n_2, a_n_1 = a_n_1, a_n_2 + a_n_1
+    return a_n_2
+
+
+def fibbonaci():
+    n = int(input())
+
+    r = ""
+    for i in range(0, n):
+        r += str(_fi(i)) + " "
+
+    print(str(n), file=sys.stderr)
+
+    print(r[:-1])
+
+
 if __name__ == "__main__":
     #a = [int(x) for x in input().split()]
     #print(a[1])
+
+    s = input()
+    print(dna(s))
+    print(dna_if(s))
+    print(l33t(s))
+    print(count_letters(s))
 
     sort_tuples()
 
@@ -125,8 +165,4 @@ if __name__ == "__main__":
 
     sort_numbers()
 
-    s = input()
-    print(dna(s))
-    print(dna_if(s))
-    print(l33t(s))
-    print(count_letters(s))
+    fibbonaci()

@@ -204,6 +204,14 @@ def tallest_pyramid():
  print(str(h)+" "+str(r))
 
 
+# The program:
+# Your given a scrambled sentence. You must output an unscrambled version of the same sentence using these rules:
+# - First, print one in every two characters.
+# - Then print every other character starting from the end, going backwards. Make sure you handle strings of both even and odd lengths.
+def scrambled():
+ s=input();print(s[0::2]+s[1::2][::-1])
+
+
 if __name__ == "__main__":
 
     hours_and_minutes_to_minutes()
@@ -225,3 +233,5 @@ if __name__ == "__main__":
     # Hofstadter Conway done but without reading values etc
 
     tallest_pyramid()
+
+    scrambled()
