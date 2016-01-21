@@ -1,5 +1,8 @@
 __author__ = 'Amin'
 
+import sys
+import math
+
 
 def dna(s):
     nuclobases = ["A", "T", "C", "G"]
@@ -94,29 +97,22 @@ def linear_function():
         y = a * x + b
         print(y)
 
-import sys
-import math
 
-# Auto-generated code below aims at helping you parse
-# the standard input according to the problem statement.
+# you are provided with n numbers and should print them from lowest to highest
+def sort_numbers():
+    n = int(input())
+    l = []
+    for i in range(n):
+        x = int(input())
+        l.append(x)
 
-n = int(input())
-l = []
-for i in range(n):
-    x = int(input())
-    l.append(x)
+    l.sort()
 
-l.sort()
+    r = ""
+    for v in reversed(l):
+        r += str(v) + " "
 
-r = ""
-for v in reversed(l):
-    r += str(v) + " "
-
-# Write an action using print
-# To debug: print("Debug messages...", file=sys.stderr)
-
-print(r[:-1])
-
+    print(r[:-1])
 
 
 if __name__ == "__main__":
@@ -126,6 +122,9 @@ if __name__ == "__main__":
     sort_tuples()
 
     linear_function()
+
+    sort_numbers()
+
     s = input()
     print(dna(s))
     print(dna_if(s))

@@ -1,5 +1,8 @@
 __author__ = 'Amin'
 
+import sys
+import math
+
 
 # Test 1 -
 # Provided Input: Abcde fghij klmno pqrs tuv wxyz
@@ -116,13 +119,7 @@ def print_as_binary():
         print("{0:b}".format(x))
 
 
-import sys
-import math
-
-# Auto-generated code below aims at helping you parse
-# the standard input according to the problem statement.
-
-def convert_to_int(c):
+def _convert_to_int(c):
     if c == "F":
         return 15
     elif c == "E":
@@ -138,25 +135,30 @@ def convert_to_int(c):
     else:
         return int(c)
 
-#x = int("deadbeef", 16)
-number = input()
 
-print("number: " + str(number), file=sys.stderr)
+# you are provided with a number in hexadecimal format and should convert it to decimal value
+def hex_string_to_int_value():
+    number = input()
 
-r=0
-for i, c in enumerate(reversed(number)):
-    v = convert_to_int(c)
-    r += 16**i * v
+    print("number: " + str(number), file=sys.stderr)
 
+    r=0
+    for i, c in enumerate(reversed(number)):
+        v = _convert_to_int(c)
+        r += 16**i * v
 
-
-# Write an action using print
-# To debug: print("Debug messages...", file=sys.stderr)
-
-print(r)
-
+    print(r)
 
 
 if __name__ == "__main__":
+
+    upper_letter()
+
+    greatest_common_divisor()
+
+    print_powers()
+
     print_as_binary()
-    pass
+
+    hex_string_to_int_value()
+

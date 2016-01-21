@@ -1,5 +1,7 @@
 __author__ = 'Amin'
 
+import sys
+import math
 
 # convert value provided as HH:MM to a number of minutes
 def hours_and_minutes_to_minutes():
@@ -164,64 +166,62 @@ def a(n):
 # }
 
 
-Given a certain number of blocks N, your program must return the height of the tallest possible 2D pyramid that can be created, followed by the number of unused blocks remaining.
+# Given a certain number of blocks N, your program must return the height of the tallest possible 2D pyramid that can be created, followed by the number of unused blocks remaining.
+# For example, a pyramid of height 3 contains 6 blocks: 3 for the first level, 2 for the second level and 1 for the last level.
+# INPUT:
+# Line 1: An integer N, the number of blocks to be used for the pyramid.
+# OUTPUT:
+# Line 1: Two integers H and R, where H is the greatest possible pyramid height, and R is the remaining unused blocks.
+# CONSTRAINTS:
+# 0 ? N < 50000
+# EXAMPLE:
+# Input
+# 10
+# Output
+# 4 0
 
-For example, a pyramid of height 3 contains 6 blocks: 3 for the first level, 2 for the second level and 1 for the last level.
+# general version
+#     n=int(input())
+#     flag_continue = True
+#     h=0
+#     r=n
+#     while flag_continue:
+#         print("h: " + str(h), file=sys.stderr)
+#         print("r: " + str(r), file=sys.stderr)
+#         if r>=(h+1):
+#             h+=1
+#             r-=h
+#         else:
+#             flag_continue = False
+#     print(str(h) + " " + str(r))
 
-INPUT:
-Line 1: An integer N, the number of blocks to be used for the pyramid.
+def tallest_pyramid():
+ f,h=1,0
+ r=int(input())
+ while f:
+  if r>=h+1:h+=1;r-=h
+  else:f=0
+ print(str(h)+" "+str(r))
 
-OUTPUT:
-Line 1: Two integers H and R, where H is the greatest possible pyramid height, and R is the remaining unused blocks.
-
-CONSTRAINTS:
-0 ? N < 50000
-
-EXAMPLE:
-Input
-10
-Output
-4 0
-
-import sys
-
-n=int(input())
-
-flag_continue = True
-h=0
-r=n
-
-while flag_continue:
-    print("h: " + str(h), file=sys.stderr)
-    print("r: " + str(r), file=sys.stderr)
-
-    if r>=(h+1):
-        h+=1
-        r-=h
-    else:
-        flag_continue = False
-
-# Write an action using print
-# To debug: print("Debug messages...", file=sys.stderr)
-
-print(str(h) + " " + str(r))
-
-f=1
-h=0
-r=int(input())
-while f:
- if r>=(h+1):h+=1;r-=h
- else:f=0
-print(str(h)+" "+str(r))
-
-
-f,h=1,0
-r=int(input())
-while f:
- if r>=h+1:h+=1;r-=h
- else:f=0
-print(str(h)+" "+str(r))
 
 if __name__ == "__main__":
-    #split_text_into_columns()
+
+    hours_and_minutes_to_minutes()
+
+    lucky_number()
+
+    duel()
+
+    split_text_into_columns()
+
+    operation_or()
+
+    midpoint()
+
+    most_common_letter()
+
     sort_values()
+
+    # Hofstadter Conway done but without reading values etc
+
+    tallest_pyramid()
